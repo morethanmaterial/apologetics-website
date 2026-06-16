@@ -54,7 +54,7 @@ apologetics materials, is licensed separately under the Creative Commons
 Attribution 4.0 International License. See `CONTENT-LICENSE.md`.
 
 Site code, configuration, layouts, templates, stylesheets, scripts, and other
-software are licensed separately under the MIT License. See `LICENSE`.
+software are licensed separately under the MIT License. See `LICENSE.md`.
 
 No trademark, service mark, trade dress, publicity, personality, or brand
 identity rights are granted by the MIT License, the Creative Commons Attribution
