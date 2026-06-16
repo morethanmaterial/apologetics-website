@@ -11,6 +11,10 @@ essays, posts, study notes, apologetics materials, or other materials in the
 content/ directory. That content is licensed separately under the Creative
 Commons Attribution 4.0 International License. See CONTENT-LICENSE.md.
 
+This license does not apply to names, logos, icons, channel artwork, banners,
+profile images, wordmarks, slogans, trade dress, or other brand-identifying
+assets. Those materials are reserved separately. See BRAND-LICENSE.md.
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
