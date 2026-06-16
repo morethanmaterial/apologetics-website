@@ -12,7 +12,7 @@ directory.
 
 This license does not apply to the software, source code, configuration,
 layouts, templates, stylesheets, scripts, or other code in this repository.
-Those materials are licensed separately under the MIT License. See `LICENSE`.
+Those materials are licensed separately under the MIT License. See `LICENSE.md`.
 
 This license does not apply to names, logos, icons, channel artwork, banners,
 profile images, wordmarks, slogans, trade dress, or other brand-identifying
