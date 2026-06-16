@@ -1,0 +1,2 @@
+{{- $js := resources.Get "js/infinite-scroll.js" | minify | fingerprint -}}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous"></script>

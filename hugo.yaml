@@ -1,5 +1,5 @@
 baseURL: "https://morethanmaterial.org/"
-languageCode: en-us
+locale: en-us
 title: "More Than Material"
 theme: ["PaperMod"]
 
@@ -35,8 +35,6 @@ taxonomies:
   tag: tags
   series: series
 
-permalinks:
-  posts: "/posts/:slug/"
 
 markup:
   goldmark:
@@ -58,6 +56,18 @@ params:
   DateFormat: "January 2, 2006"
   defaultTheme: auto
   disableThemeToggle: false
+  disableSpecial1stPost: true
+
+  mainSections:
+    - posts
+
+  profileMode:
+    enabled: false
+
+  homeInfoParams:
+    Title: "More Than Material"
+    Content: >
+      Making the Christian case that reality is more than material.
 
   ShowReadingTime: true
   ShowShareButtons: true
@@ -72,14 +82,6 @@ params:
   ShowWordCount: false
 
   comments: false
-
-  mainSections:
-    - posts
-
-  homeInfoParams:
-    Title: "More Than Material"
-    Content: >
-      Making the Christian case that reality is more than material.
 
   assets:
     disableHLJS: true
@@ -118,7 +120,7 @@ privacy:
 services:
   instagram:
     disableInlineCSS: true
-  twitter:
+  x:
     disableInlineCSS: true
 
 menu:
@@ -128,10 +130,15 @@ menu:
       url: /posts/
       weight: 10
 
+    - identifier: tags
+      name: Topics
+      url: /tags/
+      weight: 20
+
     - identifier: categories
       name: Categories
       url: /categories/
-      weight: 20
+      weight: 30
 
     - identifier: search
       name: Search

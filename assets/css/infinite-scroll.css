@@ -1,0 +1,37 @@
+.infinite-scroll-native-pagination {
+  display: none;
+}
+
+.infinite-scroll-controls {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.infinite-scroll-button {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem 1rem;
+  background: var(--entry);
+  color: var(--primary);
+  cursor: pointer;
+  font: inherit;
+}
+
+.infinite-scroll-button:hover:not(:disabled) {
+  background: var(--tertiary);
+}
+
+.infinite-scroll-button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.infinite-scroll-status {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--secondary);
+}
+
+.infinite-scroll-sentinel {
+  height: 1px;
+}
