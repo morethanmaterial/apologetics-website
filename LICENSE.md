@@ -1,4 +1,4 @@
-# MIT License (Limited Scope
+# MIT License (Limited Scope)
 
 Copyright (c) 2026 More Than Material
 
