@@ -1,3 +1,149 @@
-baseURL: https://example.org/
+baseURL: "https://morethanmaterial.org/"
 languageCode: en-us
-title: My New Hugo Site
+title: "More Than Material"
+theme: ["PaperMod"]
+
+copyright: "© 2026 More Than Material. Original written content licensed under CC BY 4.0 unless otherwise noted."
+
+enableRobotsTXT: true
+enableEmoji: true
+enableInlineShortcodes: true
+
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+
+pagination:
+  pagerSize: 10
+
+caches:
+  images:
+    dir: :cacheDir/images
+
+minify:
+  disableXML: true
+  minifyOutput: true
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+taxonomies:
+  category: categories
+  tag: tags
+  series: series
+
+permalinks:
+  posts: "/posts/:slug/"
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    noClasses: false
+    codeFences: true
+    guessSyntax: true
+    lineNos: false
+    style: github
+
+params:
+  env: production
+  title: "More Than Material"
+  description: "Making the Christian case that reality is more than material."
+  author: "More Than Material"
+
+  DateFormat: "January 2, 2006"
+  defaultTheme: auto
+  disableThemeToggle: false
+
+  ShowReadingTime: true
+  ShowShareButtons: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowToc: true
+  TocOpen: false
+  ShowRssButtonInSectionTermList: true
+  ShowAllPagesInArchive: true
+  ShowPageNums: true
+  ShowWordCount: false
+
+  comments: false
+
+  mainSections:
+    - posts
+
+  homeInfoParams:
+    Title: "More Than Material"
+    Content: >
+      Making the Christian case that reality is more than material.
+
+  assets:
+    disableHLJS: true
+    # Add these later after you create favicon files:
+    # favicon: "/favicon.ico"
+    # favicon16x16: "/favicon-16x16.png"
+    # favicon32x32: "/favicon-32x32.png"
+    # apple_touch_icon: "/apple-touch-icon.png"
+
+  label:
+    text: "More Than Material"
+
+  cover:
+    hidden: false
+    hiddenInList: false
+    hiddenInSingle: false
+    responsiveImages: true
+
+  fuseOpts:
+    isCaseSensitive: false
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 2
+    keys:
+      - title
+      - permalink
+      - summary
+      - content
+
+privacy:
+  youtube:
+    privacyEnhanced: true
+
+services:
+  instagram:
+    disableInlineCSS: true
+  twitter:
+    disableInlineCSS: true
+
+menu:
+  main:
+    - identifier: posts
+      name: Articles
+      url: /posts/
+      weight: 10
+
+    - identifier: categories
+      name: Categories
+      url: /categories/
+      weight: 20
+
+    - identifier: search
+      name: Search
+      url: /search/
+      weight: 30
+
+    - identifier: about
+      name: About
+      url: /about/
+      weight: 40
+
+    - identifier: license
+      name: License
+      url: /license/
+      weight: 50
