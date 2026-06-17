@@ -1,0 +1,78 @@
+{{- $cross := resources.Get "svg/relative-cross.svg" -}}
+{{- $vortexBottom := resources.Get "svg/relative-vortex-bottom.svg" -}}
+{{- $vortexTop := resources.Get "svg/relative-vortex-top.svg" -}}
+{{- $vortexFallback := resources.Get "svg/relative-vortex.svg" -}}
+{{- $logoFallback := resources.Get "svg/relative-logo.svg" -}}
+
+<article class="first-entry home-info mtm-home-hero">
+  <div class="mtm-home-copy">
+    <header class="entry-header">
+      {{- $heroTitle := site.Params.homeInfoParams.Title | default site.Title -}}
+      {{- if eq $heroTitle "More Than Material" -}}
+      <h1 class="mtm-hero-title">
+        <span class="mtm-title-line">More&nbsp;Than</span>
+        <span class="mtm-title-line">Material</span>
+      </h1>
+      {{- else -}}
+      <h1 class="mtm-hero-title">{{ $heroTitle | markdownify }}</h1>
+      {{- end -}}
+    </header>
+
+    {{- with site.Params.homeInfoParams.Content }}
+    <div class="entry-content">
+      {{ . | markdownify }}
+    </div>
+    {{- end }}
+  </div>
+
+  {{- if and $cross $vortexBottom $vortexTop }}
+  <div class="mtm-icon-anchor" aria-hidden="true">
+    <div class="mtm-icon-stage">
+      <img class="mtm-icon-layer mtm-vortex-back" src="{{ $vortexTop.RelPermalink }}" alt="">
+      <img class="mtm-icon-layer mtm-cross-full" src="{{ $cross.RelPermalink }}" alt="">
+      <img class="mtm-icon-layer mtm-vortex-front" src="{{ $vortexBottom.RelPermalink }}" alt="">
+    </div>
+  </div>
+  {{- else if and $cross $vortexFallback }}
+  <div class="mtm-icon-anchor" aria-hidden="true">
+    <div class="mtm-icon-stage">
+      <img class="mtm-icon-layer mtm-cross-full" src="{{ $cross.RelPermalink }}" alt="">
+      <img class="mtm-icon-layer mtm-vortex-front" src="{{ $vortexFallback.RelPermalink }}" alt="">
+    </div>
+  </div>
+  {{- else if $logoFallback }}
+  <div class="mtm-icon-anchor" aria-hidden="true">
+    <div class="mtm-icon-stage">
+      <img class="mtm-icon-layer mtm-logo-fallback" src="{{ $logoFallback.RelPermalink }}" alt="">
+    </div>
+  </div>
+  {{- end }}
+
+  <div class="mtm-home-links-row" aria-label="More Than Material social links">
+    <div class="mtm-home-socials">
+      <a class="mtm-social-button mtm-social-youtube" href="https://youtube.com/@morethanmaterial" target="_blank" rel="noopener noreferrer">
+        YouTube
+      </a>
+      <a class="mtm-social-button mtm-social-tiktok" href="https://www.tiktok.com/@morethanmaterial" target="_blank" rel="noopener noreferrer">
+        TikTok
+      </a>
+      <a class="mtm-social-button mtm-social-instagram" href="https://www.instagram.com/morethanmaterial" target="_blank" rel="noopener noreferrer">
+        Instagram
+      </a>
+      <a class="mtm-social-button mtm-social-podcast" href="https://podfollow.com/" target="_blank" rel="noopener noreferrer">
+        Podcast
+      </a>
+    </div>
+
+    <a class="mtm-polemics-sticker" href="/polemics/" aria-label="Open MTM Polemics links">
+      <span>MTM</span>
+      <span>Polemics</span>
+    </a>
+  </div>
+</article>
+
+{{/* MTM recent articles heading start */}}
+<section class="mtm-recent-articles-heading" aria-labelledby="mtm-recent-articles-title">
+  <h2 id="mtm-recent-articles-title">Recent Articles</h2>
+</section>
+{{/* MTM recent articles heading end */}}

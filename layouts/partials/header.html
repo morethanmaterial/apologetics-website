@@ -1,0 +1,91 @@
+<header class="header">
+  <nav class="nav">
+    <div class="logo">
+      {{- $label_text := (site.Params.label.text | default site.Title) -}}
+      {{- if site.Title }}
+      <a href="{{ "" | absLangURL }}" accesskey="h" title="{{ $label_text }} (Alt + H)">
+        {{- if site.Params.label.icon }}
+        <img src="{{ site.Params.label.icon | absURL }}" alt="" aria-label="logo"
+          height="{{- site.Params.label.iconHeight | default "30" -}}">
+        {{- end -}}
+        {{- $label_text -}}
+      </a>
+      {{- end }}
+
+      <div class="logo-switches">
+        {{- if (not site.Params.disableThemeToggle) }}
+        <button id="mtm-theme-toggle" type="button" accesskey="t" title="Switch theme (Alt + T)" aria-label="Switch theme">
+          <svg class="mtm-theme-icon mtm-icon-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="mtm-theme-icon mtm-icon-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+        {{- end }}
+      </div>
+    </div>
+
+    {{- $currentPage := . -}}
+    {{- $pageURL := $currentPage.Permalink | absLangURL -}}
+
+    <ul id="menu">
+      {{- range site.Menus.main }}
+        {{- $classes := slice -}}
+        {{- if .HasChildren }}{{ $classes = $classes | append "menu-item-has-children" }}{{ end -}}
+        {{- with .Params.class }}{{ $classes = $classes | append . }}{{ end -}}
+        {{- $active := or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) -}}
+        {{- if and .URL (not .HasChildren) -}}
+          {{- $menuURL := .URL | absLangURL -}}
+          {{- $active = or $active (eq $menuURL $pageURL) -}}
+        {{- end -}}
+
+        <li{{ with $classes }} class="{{ delimit . " " }}"{{ end }}>
+          {{- if .HasChildren }}
+            <button class="menu-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+              <span{{ if $active }} class="active"{{ end }}>
+                {{- .Pre -}}{{- .Name -}}{{- .Post -}}
+                <span class="menu-caret">▾</span>
+              </span>
+            </button>
+
+            <ul class="submenu">
+              {{- range .Children }}
+                {{- $childURL := .URL | absLangURL -}}
+                {{- $childActive := or ($currentPage.IsMenuCurrent "main" .) (eq $childURL $pageURL) -}}
+                <li>
+                  <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }}">
+                    <span{{ if $childActive }} class="active"{{ end }}>
+                      {{- .Pre -}}{{- .Name -}}{{- .Post -}}
+                    </span>
+                  </a>
+                </li>
+              {{- end }}
+            </ul>
+          {{- else }}
+            {{- $isSearch := eq .Identifier "search" -}}
+            <a href="{{ .URL | absLangURL }}"
+               title="{{ .Title | default .Name }}{{- if $isSearch }} (Alt + /){{- end }}"
+               {{- if $isSearch }} accesskey="/"{{- end }}>
+              <span{{ if $active }} class="active"{{ end }}>
+                {{- .Pre -}}{{- .Name -}}{{- .Post -}}
+              </span>
+            </a>
+          {{- end }}
+        </li>
+      {{- end }}
+    </ul>
+  </nav>
+</header>

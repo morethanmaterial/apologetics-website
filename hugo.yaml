@@ -38,6 +38,10 @@ taxonomies:
 
 markup:
   goldmark:
+    extensions:
+      extras:
+        mark:
+          enable: true
     renderer:
       unsafe: true
   highlight:
@@ -72,7 +76,7 @@ params:
   ShowReadingTime: true
   ShowShareButtons: true
   ShowPostNavLinks: true
-  ShowBreadCrumbs: true
+  ShowBreadCrumbs: false
   ShowCodeCopyButtons: true
   ShowToc: true
   TocOpen: false
@@ -125,32 +129,60 @@ services:
 
 menu:
   main:
-    - identifier: posts
+    - identifier: gospel
+      name: Gospel
+      url: /gospel/
+      weight: 10
+      params:
+        class: menu-button menu-button-gospel
+
+    - identifier: explore
+      name: Explore
+      url: ""
+      weight: 20
+
+    - identifier: explore-articles
+      parent: explore
       name: Articles
       url: /posts/
       weight: 10
 
-    - identifier: tags
-      name: Topics
-      url: /tags/
+    - identifier: explore-archive
+      parent: explore
+      name: Archive
+      url: /archives/
       weight: 20
 
-    - identifier: categories
+    - identifier: explore-categories
+      parent: explore
       name: Categories
       url: /categories/
+      weight: 30
+
+    - identifier: explore-topics
+      parent: explore
+      name: Topics
+      url: /tags/
+      weight: 40
+
+    - identifier: resources
+      name: Resources
+      url: /resources/
       weight: 30
 
     - identifier: search
       name: Search
       url: /search/
-      weight: 30
+      weight: 40
 
     - identifier: about
       name: About
       url: /about/
-      weight: 40
-
-    - identifier: license
-      name: License
-      url: /license/
       weight: 50
+
+    - identifier: donate
+      name: Donate
+      url: /donate/
+      weight: 60
+      params:
+        class: menu-button menu-button-donate

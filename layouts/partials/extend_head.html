@@ -1,2 +1,64 @@
-{{- $css := resources.Get "css/infinite-scroll.css" | minify | fingerprint -}}
-<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
+<script>
+(function () {
+  var CHOICE_KEY = "mtm-theme-choice";
+
+  function systemWantsDark() {
+    return window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  function getChoice() {
+    try {
+      return localStorage.getItem(CHOICE_KEY);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function applyEarly(isDark) {
+    document.documentElement.classList.toggle("dark", isDark);
+    document.documentElement.classList.toggle("mtm-dark", isDark);
+    document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+  }
+
+  /*
+    Ignore older broken theme keys from previous attempts.
+    Only mtm-theme-choice counts now.
+  */
+  var choice = getChoice();
+  var isDark = choice === "dark" || (!choice && systemWantsDark());
+
+  try {
+    if (!choice) {
+      localStorage.removeItem("pref-theme");
+      localStorage.removeItem("mtm-theme-manual");
+    } else {
+      localStorage.setItem("pref-theme", choice);
+    }
+  } catch (error) {}
+
+  applyEarly(isDark);
+
+  document.addEventListener("DOMContentLoaded", function () {
+    document.body.classList.toggle("dark", isDark);
+  });
+})();
+</script>
+
+<style>
+html.mtm-dark,
+html.mtm-dark body {
+  background: #14171a !important;
+  color: #ffffff !important;
+}
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+{{- $infiniteCSS := resources.Get "css/infinite-scroll.css" -}}
+{{- if $infiniteCSS -}}
+  {{- $infiniteCSS = $infiniteCSS | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $infiniteCSS.RelPermalink }}" integrity="{{ $infiniteCSS.Data.Integrity }}" crossorigin="anonymous">
+{{- end -}}

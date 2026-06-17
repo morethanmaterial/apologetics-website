@@ -1,2 +1,393 @@
-{{- $js := resources.Get "js/infinite-scroll.js" | minify | fingerprint -}}
-<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous"></script>
+<script>
+(function () {
+  var CHOICE_KEY = "mtm-theme-choice";
+
+  function systemWantsDark() {
+    return window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  function getChoice() {
+    try {
+      return localStorage.getItem(CHOICE_KEY);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function setChoice(choice) {
+    try {
+      localStorage.setItem(CHOICE_KEY, choice);
+      localStorage.setItem("pref-theme", choice);
+    } catch (error) {}
+  }
+
+  function applyTheme(isDark) {
+    document.documentElement.classList.toggle("dark", isDark);
+    document.documentElement.classList.toggle("mtm-dark", isDark);
+    document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+    document.body.classList.toggle("dark", isDark);
+
+    var button = document.getElementById("mtm-theme-toggle");
+    if (button) {
+      button.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+      button.setAttribute("aria-pressed", isDark ? "true" : "false");
+      button.setAttribute("title", isDark ? "Switch to light mode (Alt + T)" : "Switch to dark mode (Alt + T)");
+    }
+  }
+
+  function currentShouldBeDark() {
+    var choice = getChoice();
+    if (choice === "dark") return true;
+    if (choice === "light") return false;
+    return systemWantsDark();
+  }
+
+  applyTheme(currentShouldBeDark());
+
+  document.addEventListener("click", function (event) {
+    var button = event.target.closest("#mtm-theme-toggle");
+    if (!button) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    var nextIsDark = !document.body.classList.contains("dark");
+    applyTheme(nextIsDark);
+    setChoice(nextIsDark ? "dark" : "light");
+  }, true);
+
+  if (window.matchMedia) {
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (event) {
+      if (!getChoice()) applyTheme(event.matches);
+    });
+  }
+})();
+</script>
+
+<script>
+(function () {
+  var MENU_SELECTOR = "#menu .menu-item-has-children";
+  var TRIGGER_SELECTOR = "#menu .menu-item-has-children > .menu-trigger";
+
+  var startX = 0;
+  var startY = 0;
+  var moved = false;
+  var lastScrollY = window.scrollY || 0;
+
+  function isTouchMenuMode() {
+    return window.matchMedia("(hover: none), (pointer: coarse), (max-width: 820px)").matches;
+  }
+
+  function syncTouchModeClass() {
+    document.documentElement.classList.toggle("mtm-touch-menu-mode", isTouchMenuMode());
+  }
+
+  function closeAllMenus(except) {
+    document.querySelectorAll(MENU_SELECTOR + ".submenu-open").forEach(function (item) {
+      if (item === except) return;
+
+      item.classList.remove("submenu-open");
+
+      var trigger = item.querySelector(".menu-trigger");
+      if (trigger) trigger.setAttribute("aria-expanded", "false");
+    });
+
+    if (document.activeElement && document.activeElement.matches(TRIGGER_SELECTOR)) {
+      document.activeElement.blur();
+    }
+  }
+
+  function anyMenuOpen() {
+    return !!document.querySelector(MENU_SELECTOR + ".submenu-open");
+  }
+
+  function openMenu(item) {
+    closeAllMenus(item);
+    item.classList.add("submenu-open");
+
+    var trigger = item.querySelector(".menu-trigger");
+    if (trigger) trigger.setAttribute("aria-expanded", "true");
+  }
+
+  function closeMenu(item) {
+    item.classList.remove("submenu-open");
+
+    var trigger = item.querySelector(".menu-trigger");
+    if (trigger) {
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.blur();
+    }
+  }
+
+  function toggleMenu(item) {
+    if (item.classList.contains("submenu-open")) {
+      closeMenu(item);
+    } else {
+      openMenu(item);
+    }
+  }
+
+  syncTouchModeClass();
+
+  document.addEventListener("click", function (event) {
+    var trigger = event.target.closest(TRIGGER_SELECTOR);
+
+    if (trigger) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (moved) {
+        moved = false;
+        closeAllMenus();
+        return;
+      }
+
+      if (isTouchMenuMode()) {
+        toggleMenu(trigger.closest(MENU_SELECTOR));
+      }
+
+      return;
+    }
+
+    if (event.target.closest("#menu .submenu a")) {
+      closeAllMenus();
+      return;
+    }
+
+    if (!event.target.closest("#menu")) {
+      closeAllMenus();
+    }
+  }, true);
+
+  document.addEventListener("touchstart", function (event) {
+    moved = false;
+
+    if (event.touches && event.touches.length) {
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+    }
+
+    if (!event.target.closest("#menu")) {
+      closeAllMenus();
+    }
+  }, { capture: true, passive: true });
+
+  document.addEventListener("touchmove", function (event) {
+    if (!event.touches || !event.touches.length) return;
+
+    var dx = Math.abs(event.touches[0].clientX - startX);
+    var dy = Math.abs(event.touches[0].clientY - startY);
+
+    if (dx > 4 || dy > 4) {
+      moved = true;
+      closeAllMenus();
+    }
+  }, { capture: true, passive: true });
+
+  document.addEventListener("pointerdown", function (event) {
+    if (!event.target.closest("#menu")) closeAllMenus();
+  }, true);
+
+  document.addEventListener("pointermove", function (event) {
+    if (!isTouchMenuMode()) return;
+    if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
+
+    if (anyMenuOpen()) {
+      closeAllMenus();
+    }
+  }, { capture: true, passive: true });
+
+  window.addEventListener("scroll", function () {
+    var currentY = window.scrollY || 0;
+
+    if (Math.abs(currentY - lastScrollY) > 2) {
+      closeAllMenus();
+    }
+
+    lastScrollY = currentY;
+  }, { passive: true });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") closeAllMenus();
+  });
+
+  window.addEventListener("resize", function () {
+    syncTouchModeClass();
+    closeAllMenus();
+  });
+})();
+</script>
+
+{{- $infiniteJS := resources.Get "js/infinite-scroll.js" -}}
+{{- if $infiniteJS -}}
+  {{- $infiniteJS = $infiniteJS | minify | fingerprint -}}
+  <script defer src="{{ $infiniteJS.RelPermalink }}" integrity="{{ $infiniteJS.Data.Integrity }}" crossorigin="anonymous"></script>
+{{- end -}}
+
+{{- $roughJS := resources.Get "js/rough.js" -}}
+{{- if $roughJS -}}
+  {{- $roughJS = $roughJS | minify | fingerprint -}}
+  <script defer src="{{ $roughJS.RelPermalink }}" integrity="{{ $roughJS.Data.Integrity }}" crossorigin="anonymous"></script>
+{{- end -}}
+
+{{- $roughOutlineJS := resources.Get "js/rough-outline.js" -}}
+{{- if $roughOutlineJS -}}
+  {{- $roughOutlineJS = $roughOutlineJS | minify | fingerprint -}}
+  <script defer src="{{ $roughOutlineJS.RelPermalink }}" integrity="{{ $roughOutlineJS.Data.Integrity }}" crossorigin="anonymous"></script>
+{{- end -}}
+
+<!-- MTM hero logo match text height -->
+<script>
+(function () {
+  function updateHeroLogoSize() {
+    var hero = document.querySelector(".first-entry.home-info.mtm-home-hero");
+    if (!hero) return;
+
+    var copy = hero.querySelector(".mtm-home-copy");
+    if (!copy) return;
+
+    var height = Math.round(copy.getBoundingClientRect().height);
+
+    if (height > 0) {
+      hero.style.setProperty("--mtm-hero-copy-height", height + "px");
+    }
+  }
+
+  updateHeroLogoSize();
+
+  window.addEventListener("load", updateHeroLogoSize);
+  window.addEventListener("resize", updateHeroLogoSize);
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(updateHeroLogoSize);
+  }
+
+  if ("ResizeObserver" in window) {
+    var hero = document.querySelector(".first-entry.home-info.mtm-home-hero");
+    var copy = hero && hero.querySelector(".mtm-home-copy");
+
+    if (copy) {
+      var observer = new ResizeObserver(updateHeroLogoSize);
+      observer.observe(copy);
+    }
+  }
+})();
+</script>
+<!-- End MTM hero logo match text height -->
+
+<!-- MTM smooth scroll-driven mobile header -->
+<script>
+(function () {
+  var root = document.documentElement;
+  var mq = window.matchMedia("(max-width: 820px)");
+  var lastY = window.scrollY || 0;
+  var offset = 0;
+  var ticking = false;
+
+  function getHeader() {
+    return document.querySelector("body > header.header, header.header, body > header");
+  }
+
+  function menuIsOpen() {
+    return !!document.querySelector(
+      ".submenu-open, .mtm-submenu-open, .menu-open, .is-open, [aria-expanded='true']"
+    );
+  }
+
+  function setOffset(value) {
+    var header = getHeader();
+    var h = header ? Math.ceil(header.getBoundingClientRect().height) : 0;
+    var max = Math.max(0, h + 4);
+
+    offset = Math.max(0, Math.min(max, value));
+    root.style.setProperty("--mtm-mobile-header-offset", offset + "px");
+  }
+
+  function measureHeader() {
+    var header = getHeader();
+    if (!header) return 0;
+
+    var h = Math.ceil(header.getBoundingClientRect().height);
+    if (h > 0) {
+      root.style.setProperty("--mtm-mobile-header-h", h + "px");
+    }
+
+    return h;
+  }
+
+  function updateHeader() {
+    var header = getHeader();
+    if (!header) return;
+
+    var y = window.scrollY || 0;
+    var h = measureHeader();
+
+    if (!mq.matches) {
+      root.classList.remove("mtm-mobile-header-active", "mtm-header-at-top", "mtm-header-scrolled");
+      root.style.removeProperty("--mtm-mobile-header-offset");
+      root.style.removeProperty("--mtm-mobile-header-h");
+      lastY = y;
+      offset = 0;
+      return;
+    }
+
+    root.classList.add("mtm-mobile-header-active");
+
+    var delta = y - lastY;
+    var atTop = y <= 2;
+
+    root.classList.toggle("mtm-header-at-top", atTop);
+    root.classList.toggle("mtm-header-scrolled", !atTop);
+
+    if (atTop || menuIsOpen()) {
+      setOffset(0);
+    } else {
+      /*
+        This is the important part:
+        the header offset follows scroll delta directly.
+        No threshold hide class, no half-lock, no pop.
+      */
+      setOffset(offset + delta);
+    }
+
+    lastY = y;
+  }
+
+  function requestUpdate() {
+    if (ticking) return;
+
+    ticking = true;
+    requestAnimationFrame(function () {
+      updateHeader();
+      ticking = false;
+    });
+  }
+
+  measureHeader();
+  setOffset(0);
+  updateHeader();
+
+  window.addEventListener("scroll", requestUpdate, { passive: true });
+  window.addEventListener("resize", function () {
+    measureHeader();
+    requestUpdate();
+  }, { passive: true });
+
+  window.addEventListener("orientationchange", function () {
+    setOffset(0);
+    setTimeout(function () {
+      measureHeader();
+      updateHeader();
+    }, 250);
+  });
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () {
+      measureHeader();
+      updateHeader();
+    });
+  }
+})();
+</script>
+<!-- End MTM smooth scroll-driven mobile header -->

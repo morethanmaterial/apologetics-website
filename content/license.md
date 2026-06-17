@@ -11,6 +11,7 @@ In short:
 
 - **Articles and written resources** may be shared, quoted, adapted, and reused with attribution.
 - **Website code** may be reused under the MIT License.
+- **Third-party dependencies** remain under their own upstream licenses.
 - **Logos, names, and branding** are reserved and may not be reused as your own branding.
 
 ## Written Content
@@ -50,6 +51,14 @@ This software license does not apply to the written articles or brand assets.
 
 Full software license: [LICENSE.md](https://github.com/morethanmaterial/apologetics-website/blob/main/LICENSE.md)
 
+## Third-Party Dependencies
+
+This site is built with and includes third-party open source software, including Hugo, PaperMod, and RoughJS.
+
+Those dependencies are not owned by More Than Material and remain under their own upstream licenses.
+
+Dependency license notices: [DEPENDENCY-LICENSES.md](https://github.com/morethanmaterial/apologetics-website/blob/main/DEPENDENCY-LICENSES.md)
+
 ## Branding
 
 The **More Than Material** name, logos, icons, channel artwork, banners, profile images, wordmarks, slogans, and other brand-identifying materials are reserved.
@@ -68,6 +77,7 @@ Full brand asset terms: [BRAND-LICENSE.md](https://github.com/morethanmaterial/a
 |---|---|
 | Articles, essays, posts, and written resources | CC BY 4.0 |
 | Website code, configuration, layouts, and scripts | MIT License |
+| Third-party dependencies, including Hugo, PaperMod, and RoughJS | Their own upstream licenses |
 | Logos, names, icons, channel artwork, and branding | Reserved; limited reference use only |
 
 ## Permission Requests
