@@ -14,6 +14,7 @@
     "#menu .submenu",
     "#menu .menu-button > a",
     ".mtm-social-button",
+    ".mtm-polemics-button",
     ".mtm-channel-buttons a",
     ".post-tags a",
     ".terms-tags a",
@@ -69,6 +70,15 @@
 
     const size = element.clientWidth + "x" + element.clientHeight;
     return (hash(seeds.get(element) + "|" + salt + "|" + size) % 2147483646) + 1;
+  }
+
+  function randomFromSeed(seed) {
+    let value = seed >>> 0;
+
+    return function () {
+      value = Math.imul(value || 1, 1664525) + 1013904223;
+      return ((value >>> 0) / 4294967296);
+    };
   }
 
   function cssVar(name, element) {
@@ -669,7 +679,10 @@
     const styles = getComputedStyle(element);
     const strokeWidth = strokeWidthFor(element, "outline");
     const pad = Math.ceil(strokeWidth / 2) + 3;
-    const fillPad = pad + Math.max(1.25, strokeWidth * 0.45);
+    const isSubmenu = element.matches("#menu .submenu");
+    const fillPad = isSubmenu
+      ? pad + Math.max(0.45, strokeWidth * 0.18)
+      : pad + Math.max(1.25, strokeWidth * 0.45);
     const radius = Math.max(
       6,
       parseFloat(styles.borderTopLeftRadius) || 0,
@@ -715,11 +728,18 @@
     prepare(element);
 
     const rect = element.getBoundingClientRect();
-    const width = Math.round(rect.width);
+    const viewportWidth = Math.ceil(
+      (window.visualViewport && window.visualViewport.width) ||
+      window.innerWidth ||
+      document.documentElement.clientWidth ||
+      rect.width
+    );
+    const strokeWidth = strokeWidthFor(element, "bottom");
+    const overscan = Math.max(8, Math.ceil(strokeWidth * 4));
+    const width = Math.round(Math.max(rect.width, viewportWidth) + overscan * 2);
     if (width < 8 || rect.height < 1) return;
 
-    const strokeWidth = strokeWidthFor(element, "bottom");
-    const height = Math.max(12, Math.ceil(strokeWidth + 10));
+    const height = Math.max(16, Math.ceil(strokeWidth + 14));
     const y = Math.round(height / 2);
     const svg = document.createElementNS(svgNS, "svg");
     svg.setAttribute("class", "mtm-rough-header-line-svg");
@@ -728,26 +748,46 @@
     svg.setAttribute("viewBox", "0 0 " + width + " " + height);
     svg.setAttribute("width", String(width));
     svg.setAttribute("height", String(height));
-    svg.style.left = "0";
+    svg.style.left = Math.round(-rect.left - overscan) + "px";
     svg.style.bottom = (-Math.round(height / 2)) + "px";
     svg.style.width = width + "px";
     svg.style.height = height + "px";
     element.appendChild(svg);
 
-    const rc = rough.svg(svg);
-    const group = rc.line(3, y, Math.max(4, width - 3), y, {
-      stroke: colorFor(element, "bottom"),
-      strokeWidth,
-      roughness: 0.85,
-      bowing: 0.55,
-      maxRandomnessOffset: 1.1,
-      disableMultiStroke: true,
-      seed: seedFor(element, "header-bottom-" + index),
-      preserveVertices: true
-    });
+    const rand = randomFromSeed(seedFor(element, "header-bottom-path-" + index));
+    const start = 0;
+    const end = width;
+    const travel = end - start;
+    const step = Math.max(70, Math.min(112, travel / 18));
+    const amplitude = Math.max(1.35, Math.min(2.25, strokeWidth * 0.58));
+    const points = [[start, y]];
 
-    applyPathDefaults(group);
-    svg.appendChild(group);
+    for (let x = start + step; x < end - step * 0.45; x += step) {
+      const offset = (rand() - 0.5) * amplitude * 2;
+      const xWobble = (rand() - 0.5) * Math.min(5, step * 0.08);
+      points.push([Math.round(x + xWobble), Math.round((y + offset) * 10) / 10]);
+    }
+
+    points.push([end, y + Math.round((rand() - 0.5) * amplitude * 5) / 10]);
+
+    let pathData = "M " + points[0][0] + " " + points[0][1];
+    for (let i = 1; i < points.length; i += 1) {
+      const previous = points[i - 1];
+      const current = points[i];
+      const controlX = Math.round(((previous[0] + current[0]) / 2 + (rand() - 0.5) * 5) * 10) / 10;
+      const controlY = Math.round(((previous[1] + current[1]) / 2 + (rand() - 0.5) * amplitude * 0.55) * 10) / 10;
+      pathData += " Q " + controlX + " " + controlY + " " + current[0] + " " + current[1];
+    }
+
+    const path = document.createElementNS(svgNS, "path");
+    path.setAttribute("d", pathData);
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke", colorFor(element, "bottom"));
+    path.setAttribute("stroke-width", String(strokeWidth));
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-linejoin", "round");
+    path.setAttribute("vector-effect", "non-scaling-stroke");
+    svg.appendChild(path);
   }
 
   function drawLine(element, mode, index) {

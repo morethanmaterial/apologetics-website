@@ -3,6 +3,11 @@
 {{- $vortexTop := resources.Get "svg/relative-vortex-top.svg" -}}
 {{- $vortexFallback := resources.Get "svg/relative-vortex.svg" -}}
 {{- $logoFallback := resources.Get "svg/relative-logo.svg" -}}
+{{- $youtubeIcon := resources.Get "svg/bounded-youtube-icon.svg" -}}
+{{- $tiktokIcon := resources.Get "svg/bounded-tiktok-icon.svg" -}}
+{{- $instagramIcon := resources.Get "svg/bounded-instagram-icon.svg" -}}
+{{- $podcastIcon := resources.Get "svg/bounded-microphone-icon.svg" -}}
+{{- $polemicsIcon := resources.Get "svg/relative-polemics-logo.svg" -}}
 
 <article class="first-entry home-info mtm-home-hero">
   <div class="mtm-home-copy">
@@ -51,22 +56,29 @@
   <div class="mtm-home-links-row" aria-label="More Than Material social links">
     <div class="mtm-home-socials">
       <a class="mtm-social-button mtm-social-youtube" href="https://youtube.com/@morethanmaterial" target="_blank" rel="noopener noreferrer">
-        YouTube
+        {{- with $youtubeIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+        <span>YouTube</span>
       </a>
       <a class="mtm-social-button mtm-social-tiktok" href="https://www.tiktok.com/@morethanmaterial" target="_blank" rel="noopener noreferrer">
-        TikTok
+        {{- with $tiktokIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+        <span>TikTok</span>
       </a>
       <a class="mtm-social-button mtm-social-instagram" href="https://www.instagram.com/morethanmaterial" target="_blank" rel="noopener noreferrer">
-        Instagram
+        {{- with $instagramIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+        <span>Instagram</span>
       </a>
       <a class="mtm-social-button mtm-social-podcast" href="https://podfollow.com/" target="_blank" rel="noopener noreferrer">
-        Podcast
+        {{- with $podcastIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+        <span>Podcast</span>
       </a>
     </div>
 
-    <a class="mtm-polemics-sticker" href="/polemics/" aria-label="Open MTM Polemics links">
-      <span>MTM</span>
-      <span>Polemics</span>
+    <a class="mtm-polemics-button" href="/polemics/">
+      <span class="mtm-polemics-label">
+        <span>More from MTM:</span>
+        {{- with $polemicsIcon }}<img class="mtm-polemics-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+        <span>MTM Polemics</span>
+      </span>
     </a>
   </div>
 </article>

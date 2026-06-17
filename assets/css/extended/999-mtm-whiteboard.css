@@ -28,7 +28,9 @@
   --mtm-blue: #55acee;
   --mtm-green: #77b255;
   --mtm-red: #dd2e44;
+  --mtm-pink: #ea596e;
   --mtm-orange: #f4900c;
+  --mtm-purple: #744eaa;
 }
 
 /* ---------- Base fonts ---------- */
@@ -143,6 +145,20 @@ body:not(.dark) .entry-footer,
 body:not(.dark) .breadcrumbs,
 body:not(.dark) .breadcrumbs * {
   color: var(--mtm-ink) !important;
+  opacity: 1 !important;
+}
+
+body:not(.dark) .mtm-social-youtube,
+body:not(.dark) .mtm-social-youtube *,
+body:not(.dark) .mtm-social-tiktok,
+body:not(.dark) .mtm-social-tiktok *,
+body:not(.dark) .mtm-social-instagram,
+body:not(.dark) .mtm-social-instagram *,
+body:not(.dark) .mtm-social-podcast,
+body:not(.dark) .mtm-social-podcast *,
+body:not(.dark) .mtm-polemics-button,
+body:not(.dark) .mtm-polemics-button * {
+  color: var(--mtm-paper) !important;
   opacity: 1 !important;
 }
 
@@ -793,8 +809,23 @@ body.dark .post-content pre {
   z-index: 1;
 }
 
+.post-entry > .entry-link,
+.first-entry:not(.home-info) > .entry-link,
+.mtm-roughened.post-entry > .entry-link,
+.mtm-roughened.first-entry:not(.home-info) > .entry-link {
+  border-radius: 8px !important;
+  bottom: 0 !important;
+  display: block !important;
+  left: 0 !important;
+  pointer-events: auto !important;
+  position: absolute !important;
+  right: 0 !important;
+  top: 0 !important;
+  z-index: 5 !important;
+}
+
 .mtm-rough-header-line-svg {
-  z-index: 2;
+  z-index: 0;
 }
 
 .header-nav {
@@ -827,6 +858,7 @@ html.mtm-rough-ready .toc,
 html.mtm-rough-ready #menu .submenu.mtm-roughened,
 html.mtm-rough-ready #menu .menu-button > a,
 html.mtm-rough-ready .mtm-social-button,
+html.mtm-rough-ready .mtm-polemics-button,
 html.mtm-rough-ready .mtm-channel-buttons a,
 html.mtm-rough-ready .post-tags a,
 html.mtm-rough-ready .terms-tags a,
@@ -839,6 +871,7 @@ html.mtm-rough-ready .infinite-scroll-button {
 
 html.mtm-rough-ready #menu .menu-button > a,
 html.mtm-rough-ready .mtm-social-button,
+html.mtm-rough-ready .mtm-polemics-button,
 html.mtm-rough-ready .mtm-channel-buttons a {
   background: transparent !important;
   background-color: transparent !important;
@@ -849,11 +882,22 @@ html.mtm-rough-ready #menu .submenu.mtm-roughened {
   background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
+  z-index: 100001 !important;
+}
+
+html.mtm-rough-ready body.dark #menu .submenu.mtm-roughened,
+html.mtm-rough-ready.mtm-dark #menu .submenu.mtm-roughened,
+html.mtm-rough-ready.dark #menu .submenu.mtm-roughened {
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 html.mtm-rough-ready .mtm-social-button,
 html.mtm-rough-ready .mtm-social-button:hover,
 html.mtm-rough-ready .mtm-social-button:focus-visible,
+html.mtm-rough-ready .mtm-polemics-button,
+html.mtm-rough-ready .mtm-polemics-button:hover,
+html.mtm-rough-ready .mtm-polemics-button:focus-visible,
 html.mtm-rough-ready .mtm-channel-buttons a,
 html.mtm-rough-ready .mtm-channel-buttons a:hover,
 html.mtm-rough-ready .mtm-channel-buttons a:focus-visible {
@@ -910,6 +954,7 @@ html.mtm-rough-ready header.header::after {
   position: sticky;
   top: 0;
   z-index: 1000;
+  overflow: visible !important;
 }
 
 /* PaperMod/custom header nav wrapper */
@@ -928,7 +973,8 @@ html.mtm-rough-ready header.header::after {
   gap: 1rem !important;
 
   position: relative;
-  z-index: 1;
+  z-index: 1001;
+  overflow: visible !important;
 }
 
 /* Logo stays left and compact */
@@ -1031,6 +1077,8 @@ html.dark #mtm-theme-toggle .mtm-icon-sun {
   padding: 0 !important;
 
   overflow: visible !important;
+  position: relative !important;
+  z-index: 1002 !important;
   white-space: nowrap !important;
   list-style: none !important;
 }
@@ -1080,6 +1128,7 @@ html.dark #mtm-theme-toggle .mtm-icon-sun {
   --mtm-rough-fill: var(--mtm-paper);
 
   background: var(--mtm-paper) !important;
+  background-color: var(--mtm-paper) !important;
   color: var(--mtm-ink) !important;
   border: 3px solid var(--mtm-ink) !important;
   border-radius: 8px !important;
@@ -1162,6 +1211,7 @@ html.dark #menu .submenu {
   --mtm-rough-fill: var(--mtm-dark-panel);
 
   background: var(--mtm-dark-panel) !important;
+  background-color: var(--mtm-dark-panel) !important;
   color: var(--mtm-paper) !important;
   border-color: var(--mtm-paper) !important;
 }
@@ -1629,6 +1679,7 @@ html.mtm-touch-menu-mode #menu .menu-trigger:focus {
     background: var(--mtm-ink, #292f33) !important;
     box-shadow: none !important;
     pointer-events: none !important;
+    z-index: 0 !important;
   }
 
   html.mtm-dark body > header,
@@ -1701,3 +1752,58 @@ html.mtm-touch-menu-mode #menu .menu-trigger:focus {
 }
 
 /* ---------- End MTM smooth scroll-driven mobile header ---------- */
+
+html.mtm-rough-ready body > header::after,
+html.mtm-rough-ready body > header.header::after,
+html.mtm-rough-ready header.header::after {
+  content: none !important;
+  display: none !important;
+}
+
+html.mtm-rough-ready body > header,
+html.mtm-rough-ready body > header.header,
+html.mtm-rough-ready header.header {
+  border-bottom-color: transparent !important;
+}
+
+@media (max-width: 820px), (hover: none), (pointer: coarse) {
+  #menu .menu-item-has-children.submenu-open > .submenu,
+  html.mtm-touch-menu-mode #menu .menu-item-has-children.submenu-open > .submenu,
+  html.mtm-rough-ready #menu .menu-item-has-children.submenu-open > .submenu,
+  html.mtm-rough-ready #menu .menu-item-has-children.submenu-open > .submenu.mtm-roughened {
+    --mtm-rough-fill: var(--mtm-paper) !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    isolation: isolate !important;
+    z-index: 100010 !important;
+  }
+
+  #menu .menu-item-has-children.submenu-open {
+    z-index: 100009 !important;
+  }
+
+  body.dark #menu .menu-item-has-children.submenu-open > .submenu,
+  html.mtm-dark #menu .menu-item-has-children.submenu-open > .submenu,
+  html.dark #menu .menu-item-has-children.submenu-open > .submenu,
+  html.mtm-rough-ready body.dark #menu .menu-item-has-children.submenu-open > .submenu.mtm-roughened,
+  html.mtm-rough-ready.mtm-dark #menu .menu-item-has-children.submenu-open > .submenu.mtm-roughened,
+  html.mtm-rough-ready.dark #menu .menu-item-has-children.submenu-open > .submenu.mtm-roughened {
+    --mtm-rough-fill: var(--mtm-dark-panel) !important;
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  #menu .submenu.mtm-roughened > .mtm-local-rough-svg {
+    z-index: 0 !important;
+  }
+
+  #menu .submenu.mtm-roughened > .mtm-local-rough-svg .mtm-rough-fill-path {
+    fill: var(--mtm-rough-fill, var(--mtm-paper)) !important;
+  }
+
+  #menu .menu-item-has-children.submenu-open > .submenu::before {
+    content: none !important;
+    display: none !important;
+  }
+}
