@@ -53,7 +53,7 @@ Full software license: [LICENSE.md](https://github.com/morethanmaterial/apologet
 
 ## Third-Party Dependencies
 
-This site is built with and includes third-party open source software, including Hugo, PaperMod, and RoughJS.
+This site is built with and includes third-party open source software, including Hugo, PaperMod, RoughJS, and Rough Notation.
 
 Those dependencies are not owned by More Than Material and remain under their own upstream licenses.
 
@@ -77,7 +77,7 @@ Full brand asset terms: [BRAND-LICENSE.md](https://github.com/morethanmaterial/a
 |---|---|
 | Articles, essays, posts, and written resources | CC BY 4.0 |
 | Website code, configuration, layouts, and scripts | MIT License |
-| Third-party dependencies, including Hugo, PaperMod, and RoughJS | Their own upstream licenses |
+| Third-party dependencies, including Hugo, PaperMod, RoughJS, and Rough Notation | Their own upstream licenses |
 | Logos, names, icons, channel artwork, and branding | Reserved; limited reference use only |
 
 ## Permission Requests

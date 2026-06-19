@@ -1,7 +1,14 @@
 (function () {
   "use strict";
 
+  function markReady() {
+    if (typeof window.mtmMarkEffectReady === "function") {
+      window.mtmMarkEffectReady("rough");
+    }
+  }
+
   if (!window.rough || typeof window.rough.svg !== "function") {
+    markReady();
     return;
   }
 
@@ -21,25 +28,21 @@
     ".share-buttons",
     ".paginav",
     "nav.pagination",
-    ".infinite-scroll-button"
+    ".infinite-scroll-button",
+    ".search-input-wrap",
+    ".searchResults li",
+    ".mtm-rough-card",
+    ".mtm-rough-button",
+    ".mtm-type-pill",
+    ".mtm-topic-pill"
   ].join(",");
 
   const lineTargets = [
     { selector: ".header", mode: "bottom" },
+    { selector: ".mtm-site-footer", mode: "top" },
     { selector: ".md-content hr", mode: "middle" },
     { selector: ".md-content blockquote", mode: "left" }
   ];
-
-  const headingSelector = ".post-content h2, .post-content h3, .mtm-recent-articles-heading h2";
-  const textUnderlineTargets = [
-    ".md-content a:not(.anchor)",
-    ".md-content u",
-    ".md-content ins",
-    ".post-meta a",
-    ".footer a",
-    ".entry-cover a",
-    ".menu .active"
-  ].join(",");
 
   let scheduled = false;
   let observing = false;
@@ -56,15 +59,48 @@
     return value >>> 0;
   }
 
+  function stableChromeLabel(element) {
+    const header = element.closest && element.closest(".header");
+    if (!header) return "";
+
+    const menuItem = element.closest("#menu > li");
+    if (menuItem) {
+      const triggerText = (menuItem.textContent || "").trim().replace(/\s+/g, " ");
+      const menuIndex = Array.prototype.indexOf.call(menuItem.parentElement.children, menuItem);
+
+      return [
+        "site-chrome",
+        "menu",
+        menuIndex,
+        triggerText,
+        element.tagName,
+        element.id,
+        typeof element.className === "string" ? element.className.replace(/\bactive\b/g, "").trim() : ""
+      ].join("|");
+    }
+
+    if (element.matches(".header")) return "site-chrome|header-line";
+    if (element.closest(".logo")) return "site-chrome|logo|" + element.tagName + "|" + element.id;
+
+    return [
+      "site-chrome",
+      element.tagName,
+      element.id,
+      typeof element.className === "string" ? element.className.replace(/\bactive\b/g, "").trim() : "",
+      Array.prototype.indexOf.call(header.querySelectorAll(element.tagName), element)
+    ].join("|");
+  }
+
   function seedFor(element, salt) {
     if (!seeds.has(element)) {
-      const label = [
+      const label = stableChromeLabel(element) || [
         location.pathname,
         element.tagName,
         element.id,
         typeof element.className === "string" ? element.className : "",
         Array.prototype.indexOf.call(document.querySelectorAll(element.tagName), element)
       ].join("|");
+
       seeds.set(element, hash(label) || 1);
     }
 
@@ -95,6 +131,12 @@
       ? (cssVar("--mtm-paper", element) || "#f5f8fa")
       : (cssVar("--mtm-ink", element) || "#292f33");
 
+    if (mode === "bottom" && element.matches(".header")) {
+      return (document.documentElement.classList.contains("mtm-dark") || document.body.classList.contains("dark"))
+        ? (cssVar("--mtm-paper", element) || "#f5f8fa")
+        : (cssVar("--mtm-ink", element) || "#292f33");
+    }
+
     if (mode === "left" && element.matches(".md-content blockquote")) {
       return cssVar("--mtm-yellow", element);
     }
@@ -116,10 +158,20 @@
     return color;
   }
 
+  function headerFillColor(element) {
+    const dark = document.documentElement.classList.contains("mtm-dark") ||
+      document.body.classList.contains("dark");
+    const fallback = dark ? "#14171a" : "#ffffff";
+    return dark
+      ? (cssVar("--mtm-dark-bg", element) || fallback)
+      : (cssVar("--mtm-paper", element) || fallback);
+  }
+
   function strokeWidthFor(element, mode) {
     const styles = getComputedStyle(element);
 
     if (mode === "bottom") return Math.max(3, parseFloat(styles.borderBottomWidth) || 3);
+    if (mode === "top") return Math.max(3, parseFloat(styles.borderTopWidth) || 3);
     if (mode === "left") return Math.max(4, parseFloat(styles.borderLeftWidth) || 4);
     if (mode === "middle") return Math.max(2.5, element.clientHeight || 2.5);
     return Math.max(2.5, parseFloat(styles.borderTopWidth) || 3);
@@ -172,6 +224,21 @@
   }
 
   function prepareOutlineContent(element) {
+    if (element.matches(".searchResults li")) {
+      if (!element.querySelector(":scope > .mtm-search-result-label")) {
+        Array.from(element.childNodes).forEach(function (node) {
+          if (node.nodeType !== Node.TEXT_NODE || !node.nodeValue || !node.nodeValue.trim()) return;
+
+          const wrapper = document.createElement("span");
+          wrapper.className = "mtm-search-result-label";
+          wrapper.textContent = node.nodeValue;
+          element.replaceChild(wrapper, node);
+        });
+      }
+
+      return;
+    }
+
     if (!element.matches("a, button")) return;
     if (element.querySelector(":scope > .mtm-rough-content")) return;
 
@@ -194,413 +261,28 @@
     element.appendChild(wrapper);
   }
 
-  function prepareHeading(element) {
-    if (element.querySelector(".mtm-heading-underline")) return;
-
-    const wrapper = document.createElement("span");
-    const nodes = Array.from(element.childNodes).filter(function (node) {
-      return !(node.nodeType === 1 && node.classList.contains("anchor"));
-    });
-
-    if (!nodes.length) return;
-
-    wrapper.className = "mtm-heading-underline";
-
-    for (const node of nodes) {
-      wrapper.appendChild(node);
-    }
-
-    const anchor = Array.from(element.children).find(function (child) {
-      return child.classList.contains("anchor");
-    });
-
-    if (anchor) {
-      element.insertBefore(wrapper, anchor);
-    } else {
-      element.appendChild(wrapper);
-    }
-  }
-
-  function parseCssLength(value, relativeTo) {
-    if (!value || value === "auto" || value === "from-font") return null;
-
-    const parsed = parseFloat(value);
-    if (!Number.isFinite(parsed)) return null;
-    if (value.endsWith("rem")) return parsed * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
-    if (value.endsWith("em")) return parsed * relativeTo;
-    return parsed;
-  }
-
-  function underlineOffsetFor(element, fontSize) {
-    const offset = parseCssLength(getComputedStyle(element).textUnderlineOffset, fontSize);
-    return offset === null ? fontSize * 0.08 : offset;
-  }
-
-  function decorationColorFor(element, fallback) {
-    const styles = getComputedStyle(element);
-    const color = styles.textDecorationColor;
-    if (styles.textDecorationLine !== "none" && !transparent(color)) return color;
-    return fallback;
-  }
-
-  function underlineStrokeWidthFor(element, fallback) {
-    const styles = getComputedStyle(element);
-    const fontSize = parseFloat(styles.fontSize) || 16;
-    const thickness = parseCssLength(styles.textDecorationThickness, fontSize);
-    return Math.max(1.5, thickness || fallback);
-  }
-
-  function underlineYFor(line, containerRect, element, strokeWidth, height) {
-    const styles = getComputedStyle(element);
-    const fontSize = parseFloat(styles.fontSize) || 16;
-    const descent = fontSize * 0.13;
-    const gap = Math.max(1, Math.min(2.25, strokeWidth * 0.35));
-    const y = line.bottom - containerRect.top - descent + underlineOffsetFor(element, fontSize) + strokeWidth * 0.5 + gap;
-
-    return Math.min(
-      Math.max(strokeWidth / 2, y),
-      Math.max(strokeWidth / 2, height + gap)
-    );
-  }
-
-  function textUnderlineYFor(line, containerRect, strokeWidth, height) {
-    const clearance = Math.max(2, strokeWidth * 0.75);
-    const y = line.bottom - containerRect.top + clearance;
-
-    return Math.min(
-      Math.max(strokeWidth / 2, y),
-      Math.max(strokeWidth / 2, height + clearance + strokeWidth)
-    );
-  }
-
-  function headingColorFor(element, wrapper) {
-    const fallback = cssVar("--mtm-yellow", element);
-    return decorationColorFor(wrapper || element, fallback);
-  }
-
-  function headingStrokeWidthFor(element, wrapper) {
-    return underlineStrokeWidthFor(wrapper || element, element.matches("h3") ? 4 : 5);
-  }
-
-  function textUnderlineColorFor(element) {
-    const fallback = element.matches("a") ? cssVar("--mtm-blue", element) : cssVar("--mtm-yellow", element);
-    return decorationColorFor(element, fallback);
-  }
-
-  function textUnderlineStrokeWidthFor(element) {
-    return underlineStrokeWidthFor(element, 3);
-  }
-
-  function headingLineRects(wrapper) {
-    const range = document.createRange();
-    range.selectNodeContents(wrapper);
-
-    const rects = Array.from(range.getClientRects()).filter(function (rect) {
-      return rect.width > 2 && rect.height > 2;
-    });
-
-    range.detach();
-
-    const lines = [];
-    rects.sort(function (a, b) {
-      return a.top === b.top ? a.left - b.left : a.top - b.top;
-    }).forEach(function (rect) {
-      const center = rect.top + rect.height / 2;
-      const existing = lines.find(function (line) {
-        return Math.abs(line.center - center) <= Math.max(4, Math.min(line.height, rect.height) * 0.45);
-      });
-
-      if (existing) {
-        existing.left = Math.min(existing.left, rect.left);
-        existing.right = Math.max(existing.right, rect.right);
-        existing.top = Math.min(existing.top, rect.top);
-        existing.bottom = Math.max(existing.bottom, rect.bottom);
-        existing.height = Math.max(existing.height, rect.height);
-        existing.center = existing.top + (existing.bottom - existing.top) / 2;
-      } else {
-        lines.push({
-          left: rect.left,
-          right: rect.right,
-          top: rect.top,
-          bottom: rect.bottom,
-          height: rect.height,
-          center
-        });
-      }
-    });
-
-    return lines;
-  }
-
-  function textNodesIn(element) {
-    const nodes = [];
-    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-    let node = walker.nextNode();
-
-    while (node) {
-      if (node.nodeValue && node.nodeValue.trim()) {
-        nodes.push(node);
-      }
-      node = walker.nextNode();
-    }
-
-    return nodes;
-  }
-
-  function descenderProfile(character, mode) {
-    const headingProfiles = {
-      g: { left: 0, right: 1, padLeft: 0.04, padRight: 0.07 },
-      j: { left: 0, right: 1, padLeft: 0.04, padRight: 0.07 },
-      p: { left: 0, right: 0.62, padLeft: 0.04, padRight: 0.05 },
-      q: { left: 0.36, right: 1, padLeft: 0.05, padRight: 0.05 },
-      y: { left: 0.28, right: 1, padLeft: 0.04, padRight: 0.05 },
-      Q: { left: 0.38, right: 1, padLeft: 0.05, padRight: 0.06 }
-    };
-    const textProfiles = {
-      g: { left: 0.06, right: 0.7, padLeft: 0.03, padRight: 0.05 },
-      j: { left: 0.16, right: 0.84, padLeft: 0.04, padRight: 0.04 },
-      p: { left: 0.04, right: 0.4, padLeft: 0.04, padRight: 0.04 },
-      q: { left: 0.56, right: 0.96, padLeft: 0.04, padRight: 0.04 },
-      y: { left: 0.38, right: 0.9, padLeft: 0.04, padRight: 0.04 },
-      Q: { left: 0.56, right: 1, padLeft: 0.04, padRight: 0.05 }
-    };
-
-    return (mode === "heading" ? headingProfiles : textProfiles)[character] || textProfiles.g;
-  }
-
-  function descenderGapsFor(element, mode) {
-    const gaps = [];
-    const range = document.createRange();
-    const descenders = /[gjpqyQ]/;
-
-    textNodesIn(element).forEach(function (node) {
-      const text = node.nodeValue || "";
-
-      for (let index = 0; index < text.length; index += 1) {
-        const character = text.charAt(index);
-        if (!descenders.test(character)) continue;
-
-        range.setStart(node, index);
-        range.setEnd(node, index + 1);
-
-        Array.from(range.getClientRects()).forEach(function (rect) {
-          if (rect.width <= 1 || rect.height <= 1) return;
-
-          const profile = descenderProfile(character, mode);
-          gaps.push({
-            left: rect.left + rect.width * profile.left,
-            right: rect.left + rect.width * profile.right,
-            center: rect.top + rect.height / 2,
-            height: rect.height,
-            padLeft: rect.width * profile.padLeft,
-            padRight: rect.width * profile.padRight
-          });
-        });
-      }
-    });
-
-    range.detach();
-    return gaps;
-  }
-
-  function descenderGapPaddingFor(gap, strokeWidth, mode) {
-    const capClearance = mode === "heading" ? strokeWidth * 0.72 : strokeWidth * 0.48;
-    const scaledBreathingRoom = mode === "heading"
-      ? Math.min(5, gap.height * 0.025)
-      : Math.min(1.1, Math.max(0.2, gap.height * 0.008));
-
-    return {
-      left: capClearance + scaledBreathingRoom + gap.padLeft,
-      right: capClearance + scaledBreathingRoom + gap.padRight
-    };
-  }
-
-  function gapsForLine(gaps, line, containerRect, strokeWidth, mode) {
-    return gaps.filter(function (gap) {
-      return Math.abs(gap.center - line.center) <= Math.max(5, Math.min(gap.height, line.height) * 0.45);
-    }).map(function (gap) {
-      const padding = descenderGapPaddingFor(gap, strokeWidth, mode);
-      return {
-        left: gap.left - containerRect.left - padding.left,
-        right: gap.right - containerRect.left + padding.right
-      };
-    }).sort(function (a, b) {
-      return a.left - b.left;
-    });
-  }
-
-  function lineSegmentsAroundGaps(x1, x2, gaps, minimumWidth) {
-    const segments = [];
-    let start = x1;
-
-    gaps.forEach(function (gap) {
-      const gapLeft = Math.max(x1, gap.left);
-      const gapRight = Math.min(x2, gap.right);
-
-      if (gapRight <= start || gapLeft >= x2) return;
-
-      if (gapLeft - start >= minimumWidth) {
-        segments.push([start, gapLeft]);
-      }
-
-      start = Math.max(start, gapRight);
-    });
-
-    if (x2 - start >= minimumWidth) {
-      segments.push([start, x2]);
-    }
-
-    return segments;
-  }
-
-  function clearHeadingUnderline(element) {
-    element.querySelectorAll(":scope > .mtm-heading-underline-svg").forEach(function (svg) {
-      svg.remove();
-    });
-  }
-
   function clearHeaderLine(element) {
-    element.querySelectorAll(":scope > .mtm-rough-header-line-svg").forEach(function (svg) {
+    Array.from(element.children).forEach(function (svg) {
+      if (!svg.classList || !svg.classList.contains("mtm-rough-header-line-svg")) return;
       svg.remove();
     });
+  }
+
+  function headerLineSvg(element) {
+    const existing = Array.from(element.children).filter(function (child) {
+      return child.classList && child.classList.contains("mtm-rough-header-line-svg");
+    });
+
+    existing.slice(1).forEach(function (svg) {
+      svg.remove();
+    });
+
+    return existing[0] || document.createElementNS(svgNS, "svg");
   }
 
   function clearRectangle(element) {
     element.querySelectorAll(":scope > .mtm-rough-outline-svg").forEach(function (svg) {
       svg.remove();
-    });
-  }
-
-  function prepareTextUnderline(element) {
-    if (element.querySelector(":scope > .mtm-text-underline-content")) return;
-
-    const wrapper = document.createElement("span");
-    const nodes = Array.from(element.childNodes).filter(function (node) {
-      return !(node.nodeType === 1 && node.classList.contains("mtm-text-underline-svg"));
-    });
-
-    if (!nodes.length) return;
-
-    element.classList.add("mtm-text-underline");
-    wrapper.className = "mtm-text-underline-content";
-
-    for (const node of nodes) {
-      wrapper.appendChild(node);
-    }
-
-    element.appendChild(wrapper);
-  }
-
-  function clearTextUnderline(element) {
-    element.querySelectorAll(":scope > .mtm-text-underline-svg").forEach(function (svg) {
-      svg.remove();
-    });
-  }
-
-  function drawHeadingUnderline(element, index) {
-    prepareHeading(element);
-    clearHeadingUnderline(element);
-
-    const wrapper = element.querySelector(".mtm-heading-underline");
-    if (!wrapper) return;
-
-    const elementRect = element.getBoundingClientRect();
-    if (elementRect.width < 8 || elementRect.height < 8) return;
-
-    const lines = headingLineRects(wrapper);
-    if (!lines.length) return;
-
-    const strokeWidth = headingStrokeWidthFor(element, wrapper);
-    const width = Math.ceil(elementRect.width);
-    const height = Math.ceil(elementRect.height);
-    const svg = document.createElementNS(svgNS, "svg");
-    svg.setAttribute("class", "mtm-heading-underline-svg");
-    svg.setAttribute("aria-hidden", "true");
-    svg.setAttribute("focusable", "false");
-    svg.setAttribute("viewBox", "0 0 " + width + " " + height);
-    svg.setAttribute("width", String(width));
-    svg.setAttribute("height", String(height));
-    element.insertBefore(svg, element.firstChild);
-
-    const rc = rough.svg(svg);
-    const descenderGaps = descenderGapsFor(wrapper, "heading");
-
-    lines.forEach(function (line, lineIndex) {
-      const x1 = Math.max(strokeWidth / 2, line.left - elementRect.left);
-      const x2 = Math.min(width - strokeWidth / 2, line.right - elementRect.left);
-      if (x2 - x1 < strokeWidth * 2) return;
-
-      const y = underlineYFor(line, elementRect, wrapper, strokeWidth, height);
-      const gaps = gapsForLine(descenderGaps, line, elementRect, strokeWidth, "heading");
-      const segments = lineSegmentsAroundGaps(x1, x2, gaps, strokeWidth * 1.6);
-
-      segments.forEach(function (segment, segmentIndex) {
-        const group = rc.line(segment[0], y, segment[1], y, {
-          stroke: headingColorFor(element, wrapper),
-          strokeWidth,
-          roughness: 0.72,
-          bowing: 0.16,
-          maxRandomnessOffset: 0.62,
-          disableMultiStroke: true,
-          seed: seedFor(element, "heading-underline-" + index + "-" + lineIndex + "-" + segmentIndex),
-          preserveVertices: true
-        });
-
-        applyPathDefaults(group);
-        svg.appendChild(group);
-      });
-    });
-  }
-
-  function drawTextUnderline(element, index) {
-    if (element.closest(headingSelector)) return;
-    if (element.classList.contains("mtm-social-button") || element.closest(".mtm-channel-buttons")) return;
-
-    prepareTextUnderline(element);
-    clearTextUnderline(element);
-
-    const wrapper = element.querySelector(":scope > .mtm-text-underline-content");
-    if (!wrapper || !textNodesIn(wrapper).length) return;
-
-    const elementRect = element.getBoundingClientRect();
-    if (elementRect.width < 4 || elementRect.height < 4) return;
-
-    const lines = headingLineRects(wrapper);
-    if (!lines.length) return;
-
-    const strokeWidth = textUnderlineStrokeWidthFor(element);
-    const width = Math.ceil(elementRect.width);
-    const height = Math.ceil(elementRect.height);
-    const svg = document.createElementNS(svgNS, "svg");
-    svg.setAttribute("class", "mtm-text-underline-svg");
-    svg.setAttribute("aria-hidden", "true");
-    svg.setAttribute("focusable", "false");
-    svg.setAttribute("viewBox", "0 0 " + width + " " + height);
-    svg.setAttribute("width", String(width));
-    svg.setAttribute("height", String(height));
-    element.insertBefore(svg, element.firstChild);
-
-    const rc = rough.svg(svg);
-
-    lines.forEach(function (line, lineIndex) {
-      const x1 = Math.max(strokeWidth / 2, line.left - elementRect.left);
-      const x2 = Math.min(width - strokeWidth / 2, line.right - elementRect.left);
-      if (x2 - x1 < strokeWidth * 2) return;
-
-      const y = textUnderlineYFor(line, elementRect, strokeWidth, height);
-      const group = rc.line(x1, y, x2, y, {
-        stroke: textUnderlineColorFor(element),
-        strokeWidth,
-        roughness: 0.68,
-        bowing: 0.14,
-        maxRandomnessOffset: 0.54,
-        disableMultiStroke: true,
-        seed: seedFor(element, "text-underline-" + index + "-" + lineIndex),
-        preserveVertices: true
-      });
-
-      applyPathDefaults(group);
-      svg.appendChild(group);
     });
   }
 
@@ -723,10 +405,11 @@
     svg.appendChild(group);
   }
 
-  function drawHeaderLine(element, index) {
-    clearHeaderLine(element);
+  function drawHeaderLine(element, index, mode) {
     prepare(element);
 
+    const edge = mode || "bottom";
+    const isTop = edge === "top";
     const rect = element.getBoundingClientRect();
     const viewportWidth = Math.ceil(
       (window.visualViewport && window.visualViewport.width) ||
@@ -734,14 +417,19 @@
       document.documentElement.clientWidth ||
       rect.width
     );
-    const strokeWidth = strokeWidthFor(element, "bottom");
+    const strokeWidth = strokeWidthFor(element, edge);
     const overscan = Math.max(8, Math.ceil(strokeWidth * 4));
     const width = Math.round(Math.max(rect.width, viewportWidth) + overscan * 2);
-    if (width < 8 || rect.height < 1) return;
+    if (width < 8 || rect.height < 1) {
+      clearHeaderLine(element);
+      return;
+    }
 
-    const height = Math.max(16, Math.ceil(strokeWidth + 14));
-    const y = Math.round(height / 2);
-    const svg = document.createElementNS(svgNS, "svg");
+    const headerHeight = Math.ceil(Math.max(rect.height, element.offsetHeight || 0, 1));
+    const height = Math.max(headerHeight, Math.ceil(strokeWidth * 2 + 12));
+    const edgeOffset = Math.max(4, strokeWidth * 1.45);
+    const y = Math.round((isTop ? edgeOffset : height - edgeOffset) * 10) / 10;
+    const svg = headerLineSvg(element);
     svg.setAttribute("class", "mtm-rough-header-line-svg");
     svg.setAttribute("aria-hidden", "true");
     svg.setAttribute("focusable", "false");
@@ -749,12 +437,13 @@
     svg.setAttribute("width", String(width));
     svg.setAttribute("height", String(height));
     svg.style.left = Math.round(-rect.left - overscan) + "px";
-    svg.style.bottom = (-Math.round(height / 2)) + "px";
+    svg.style.top = "0px";
+    svg.style.bottom = "auto";
     svg.style.width = width + "px";
     svg.style.height = height + "px";
-    element.appendChild(svg);
+    svg.style.overflow = isTop ? "visible" : "hidden";
 
-    const rand = randomFromSeed(seedFor(element, "header-bottom-path-" + index));
+    const rand = randomFromSeed(seedFor(element, "full-width-" + edge + "-path-" + index));
     const start = 0;
     const end = width;
     const travel = end - start;
@@ -771,28 +460,55 @@
     points.push([end, y + Math.round((rand() - 0.5) * amplitude * 5) / 10]);
 
     let pathData = "M " + points[0][0] + " " + points[0][1];
+    const curves = [];
     for (let i = 1; i < points.length; i += 1) {
       const previous = points[i - 1];
       const current = points[i];
       const controlX = Math.round(((previous[0] + current[0]) / 2 + (rand() - 0.5) * 5) * 10) / 10;
       const controlY = Math.round(((previous[1] + current[1]) / 2 + (rand() - 0.5) * amplitude * 0.55) * 10) / 10;
+      curves.push({ previous, current, controlX, controlY });
       pathData += " Q " + controlX + " " + controlY + " " + current[0] + " " + current[1];
     }
 
     const path = document.createElementNS(svgNS, "path");
     path.setAttribute("d", pathData);
     path.setAttribute("fill", "none");
-    path.setAttribute("stroke", colorFor(element, "bottom"));
+    path.setAttribute("stroke", colorFor(element, edge));
     path.setAttribute("stroke-width", String(strokeWidth));
     path.setAttribute("stroke-linecap", "round");
     path.setAttribute("stroke-linejoin", "round");
     path.setAttribute("vector-effect", "non-scaling-stroke");
-    svg.appendChild(path);
+
+    if (isTop) {
+      svg.replaceChildren(path);
+    } else {
+      let fillData = "M 0 0 L " + width + " 0 L " + points[points.length - 1][0] + " " + points[points.length - 1][1];
+      for (let i = curves.length - 1; i >= 0; i -= 1) {
+        const curve = curves[i];
+        fillData += " Q " + curve.controlX + " " + curve.controlY + " " + curve.previous[0] + " " + curve.previous[1];
+      }
+      fillData += " Z";
+
+      const fill = document.createElementNS(svgNS, "path");
+      fill.setAttribute("d", fillData);
+      fill.setAttribute("fill", headerFillColor(element));
+      fill.setAttribute("stroke", "none");
+      svg.replaceChildren(fill, path);
+    }
+
+    if (!svg.parentNode) {
+      element.appendChild(svg);
+    }
   }
 
   function drawLine(element, mode, index) {
     if (mode === "bottom" && element.matches(".header")) {
-      drawHeaderLine(element, index);
+      drawHeaderLine(element, index, mode);
+      return;
+    }
+
+    if (mode === "top" && element.matches(".mtm-site-footer")) {
+      drawHeaderLine(element, index, mode);
       return;
     }
 
@@ -810,7 +526,9 @@
     let viewHeight = 18;
     let points = [3, 9, Math.max(4, viewWidth - 3), 9];
 
-    if (mode === "left") {
+    if (mode === "top") {
+      top = box.top - 9;
+    } else if (mode === "left") {
       left = box.left - 9;
       top = box.top;
       width = 18;
@@ -840,7 +558,7 @@
       disableMultiStroke: true
     };
 
-    if (mode === "bottom") {
+    if (mode === "bottom" || mode === "top") {
       lineOptions.roughness = 0.85;
       lineOptions.bowing = 0.55;
       lineOptions.maxRandomnessOffset = 1.1;
@@ -889,10 +607,13 @@
       });
     });
 
-    document.querySelectorAll(headingSelector).forEach(drawHeadingUnderline);
-    document.querySelectorAll(textUnderlineTargets).forEach(drawTextUnderline);
+    /*
+      Text annotations are handled by rough-notation-init.js. Keep this pass
+      focused on structural outlines, dividers, blockquotes, and cards.
+    */
 
     document.documentElement.classList.add("mtm-rough-ready");
+    markReady();
     observe();
   }
 
@@ -905,8 +626,48 @@
     });
   }
 
+  function isNotationNode(node) {
+    if (!node) return false;
+    if (node.nodeType === Node.TEXT_NODE) return true;
+    return node.nodeType === 1 &&
+      (
+        node.classList.contains("rough-annotation") ||
+        node.classList.contains("mtm-notation-target") ||
+        node.classList.contains("mtm-notation-heading-text") ||
+        (typeof node.closest === "function" && !!node.closest(".rough-annotation"))
+      );
+  }
+
+  function onlyNotationNodes(nodes) {
+    return Array.from(nodes || []).every(isNotationNode);
+  }
+
+  function isNotationMutation(mutation) {
+    if (isNotationNode(mutation.target)) return true;
+
+    if (mutation.type === "attributes" && mutation.attributeName === "class") {
+      const target = mutation.target;
+      return target &&
+        target.nodeType === 1 &&
+        (
+          target.classList.contains("mtm-notation-target") ||
+          target.classList.contains("mtm-notation-heading-text") ||
+          target.classList.contains("mtm-notation-heading") ||
+          target.classList.contains("mtm-notation-underline") ||
+          target.classList.contains("mtm-notation-highlight") ||
+          target.classList.contains("mtm-notation-strike") ||
+          target.classList.contains("mtm-notation-ready")
+        );
+    }
+
+    return mutation.type === "childList" &&
+      onlyNotationNodes(mutation.addedNodes) &&
+      onlyNotationNodes(mutation.removedNodes);
+  }
+
   const observer = new MutationObserver(function (mutations) {
     if (mutations.some(function (mutation) {
+      if (isNotationMutation(mutation)) return false;
       if (layer && mutation.target === layer) return false;
       return mutation.type === "childList" ||
         mutation.attributeName === "class" ||

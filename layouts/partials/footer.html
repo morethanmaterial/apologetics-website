@@ -1,0 +1,186 @@
+{{- if not (.Param "hideFooter") }}
+{{- $logo := resources.Get "svg/relative-logo.svg" -}}
+{{- $youtubeIcon := resources.Get "svg/bounded-youtube-icon.svg" -}}
+{{- $tiktokIcon := resources.Get "svg/bounded-tiktok-icon.svg" -}}
+{{- $instagramIcon := resources.Get "svg/bounded-instagram-icon.svg" -}}
+{{- $xIcon := resources.Get "svg/bounded-x-icon.svg" -}}
+{{- $podcastIcon := resources.Get "svg/bounded-microphone-icon.svg" -}}
+
+<footer class="footer mtm-site-footer">
+  <div class="mtm-site-footer-inner">
+    <section class="mtm-footer-brand" aria-label="More Than Material">
+      <a class="mtm-footer-logo" href="{{ "" | relLangURL }}">
+        {{- with $logo }}<img src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+        <span>More Than Material</span>
+      </a>
+      <p>Making the Christian case that reality is more than material.</p>
+    </section>
+
+    <nav class="mtm-footer-nav" aria-label="Footer navigation">
+      <div>
+        <h2>Explore</h2>
+        <a href="{{ "/posts/" | relLangURL }}">Articles</a>
+        <a href="{{ "/archives/" | relLangURL }}">Archive</a>
+        <a href="{{ "/tags/" | relLangURL }}">Topics</a>
+      </div>
+      <div>
+        <h2>Learn</h2>
+        <a href="{{ "/resources/" | relLangURL }}">Resources</a>
+        <a href="{{ "/gospel/" | relLangURL }}">Gospel</a>
+        <a href="{{ "/about/" | relLangURL }}">About</a>
+      </div>
+      <div>
+        <h2>Connect</h2>
+        <a class="mtm-footer-social" href="https://youtube.com/@morethanmaterial" target="_blank" rel="noopener noreferrer">
+          {{- with $youtubeIcon }}<img src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+          <span>YouTube</span>
+        </a>
+        <a class="mtm-footer-social" href="https://www.tiktok.com/@morethanmaterial" target="_blank" rel="noopener noreferrer">
+          {{- with $tiktokIcon }}<img src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+          <span>TikTok</span>
+        </a>
+        <a class="mtm-footer-social" href="https://www.instagram.com/morethanmaterial" target="_blank" rel="noopener noreferrer">
+          {{- with $instagramIcon }}<img src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+          <span>Instagram</span>
+        </a>
+        <a class="mtm-footer-social" href="https://x.com/morethanmaterial" target="_blank" rel="noopener noreferrer">
+          {{- with $xIcon }}<img src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+          <span>X/Twitter</span>
+        </a>
+        <a class="mtm-footer-social" href="https://podfollow.com/" target="_blank" rel="noopener noreferrer">
+          {{- with $podcastIcon }}<img src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+          <span>Podcast</span>
+        </a>
+      </div>
+    </nav>
+
+    <section class="mtm-footer-legal" aria-label="Site information">
+      <p>&copy; {{ now.Year }} More Than Material</p>
+      <a href="{{ "/license/" | relLangURL }}">License</a>
+      <a href="{{ "/support/" | relLangURL }}">Support</a>
+      <a href="https://gohugo.io/?utm_source=more-than-material" rel="noopener noreferrer" target="_blank">Hugo</a>
+      <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener noreferrer" target="_blank">PaperMod</a>
+    </section>
+  </div>
+</footer>
+{{- end }}
+
+{{- if (not site.Params.disableScrollToTop) }}
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+    <polyline points="17 11 12 6 7 11"></polyline>
+    <polyline points="17 18 12 13 7 18"></polyline>
+  </svg>
+</a>
+{{- end }}
+
+{{- partial "extend_footer.html" . }}
+
+<script>
+(function () {
+  var menu = document.getElementById("menu");
+  if (menu) {
+    var scrollPosition = localStorage.getItem("menu-scroll-position");
+    if (scrollPosition) menu.scrollLeft = parseInt(scrollPosition, 10);
+
+    menu.addEventListener("scroll", function () {
+      localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+    }, { passive: true });
+  }
+
+  document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+    anchor.addEventListener("click", function (event) {
+      var id = this.getAttribute("href").substr(1);
+      var target = document.querySelector("[id='" + decodeURIComponent(id) + "']");
+      if (!target) return;
+
+      event.preventDefault();
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        target.scrollIntoView();
+      } else {
+        target.scrollIntoView({ behavior: "smooth" });
+      }
+
+      if (id === "top") {
+        history.replaceState(null, null, " ");
+      } else {
+        history.pushState(null, null, "#" + id);
+      }
+    });
+  });
+})();
+</script>
+
+{{- if (not site.Params.disableScrollToTop) }}
+<script>
+(function () {
+  var topLink = document.getElementById("top-link");
+  if (!topLink) return;
+
+  function updateTopLink() {
+    var threshold = window.innerHeight;
+    if (document.body.scrollTop > threshold || document.documentElement.scrollTop > threshold) {
+      topLink.classList.remove("hidden");
+    } else {
+      topLink.classList.add("hidden");
+    }
+  }
+
+  window.addEventListener("scroll", updateTopLink, { passive: true });
+  updateTopLink();
+})();
+</script>
+{{- end }}
+
+{{- if (and (eq .Kind "page") (ne .Layout "archives") (ne .Layout "search") (.Param "ShowCodeCopyButtons")) }}
+<script>
+(function () {
+  document.querySelectorAll("pre > code").forEach(function (codeblock) {
+    var container = codeblock.parentNode.parentNode;
+    var copybutton = document.createElement("button");
+    copybutton.classList.add("copy-code");
+    copybutton.innerHTML = "{{- i18n "code_copy" | default "copy" }}";
+
+    function copyingDone() {
+      copybutton.innerHTML = "{{- i18n "code_copied" | default "copied!" }}";
+      setTimeout(function () {
+        copybutton.innerHTML = "{{- i18n "code_copy" | default "copy" }}";
+      }, 2000);
+    }
+
+    copybutton.addEventListener("click", function () {
+      if ("clipboard" in navigator) {
+        navigator.clipboard.writeText(codeblock.textContent);
+        copyingDone();
+        return;
+      }
+
+      var range = document.createRange();
+      range.selectNodeContents(codeblock);
+      var selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      try {
+        document.execCommand("copy");
+        copyingDone();
+      } catch (error) {}
+
+      selection.removeRange(range);
+    });
+
+    if (container.classList.contains("highlight")) {
+      container.appendChild(copybutton);
+    } else if (container.parentNode.firstChild === container) {
+      return;
+    } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName === "TABLE") {
+      codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+    } else {
+      codeblock.parentNode.appendChild(copybutton);
+    }
+  });
+})();
+</script>
+{{- end }}

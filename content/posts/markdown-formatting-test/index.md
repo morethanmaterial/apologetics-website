@@ -2,9 +2,14 @@
 title: "Markdown Formatting Test"
 date: "2026-06-16T00:00:00Z"
 draft: false
+types:
+  - Article
 description: "Temporary article for verifying Markdown typography and theme styling."
 summary: "Temporary test article for checking Markdown formatting in light and dark mode."
 tags:
+  - test
+  - typography
+topics:
   - test
   - typography
 categories:

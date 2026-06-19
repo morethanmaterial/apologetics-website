@@ -13,17 +13,6 @@
     }
   });
 
-  const enabledPaths = [
-    /^\/$/,
-    /^\/page\/\d+\/?$/,
-    /^\/posts\/?$/,
-    /^\/posts\/page\/\d+\/?$/
-  ];
-
-  if (!enabledPaths.some((re) => re.test(window.location.pathname))) {
-    return;
-  }
-
   function findPagination(doc) {
     return (
       doc.querySelector("footer.page-footer nav.pagination") ||
@@ -58,14 +47,15 @@
 
   const pagination = findPagination(document);
   let nextURL = getNextURL(document);
+  const paginationFooter = pagination && pagination.closest("footer.page-footer");
+  const paginationNode = paginationFooter || pagination;
+  const listParent = paginationNode && paginationNode.parentElement;
 
-  if (!pagination || !nextURL) {
+  if (!pagination || !nextURL || !paginationNode || !listParent) {
     return;
   }
 
   pagination.style.display = "none";
-
-  const parent = pagination.parentElement;
 
   const controls = document.createElement("div");
   controls.className = "infinite-scroll-controls";
@@ -78,6 +68,7 @@
   const status = document.createElement("p");
   status.className = "infinite-scroll-status";
   status.setAttribute("aria-live", "polite");
+  status.hidden = true;
 
   const sentinel = document.createElement("div");
   sentinel.className = "infinite-scroll-sentinel";
@@ -86,11 +77,16 @@
   controls.appendChild(button);
   controls.appendChild(status);
 
-  parent.insertBefore(controls, pagination);
-  parent.insertBefore(sentinel, pagination);
+  listParent.insertBefore(controls, paginationNode);
+  listParent.insertBefore(sentinel, paginationNode);
 
   let loading = false;
   let finished = false;
+
+  function setStatus(message) {
+    status.textContent = message;
+    status.hidden = !message;
+  }
 
   async function loadMore() {
     if (loading || finished || !nextURL) return;
@@ -98,7 +94,7 @@
     loading = true;
     button.disabled = true;
     button.textContent = "Loading...";
-    status.textContent = "Loading more articles...";
+    setStatus("");
 
     try {
       const response = await fetch(nextURL, {
@@ -119,14 +115,16 @@
         finished = true;
         button.textContent = "All articles loaded";
         button.disabled = true;
-        status.textContent = "All articles loaded.";
+        setStatus("");
         sentinel.remove();
         return;
       }
 
       for (const entry of entries) {
-        parent.insertBefore(entry, controls);
+        listParent.insertBefore(entry, controls);
       }
+
+      document.dispatchEvent(new CustomEvent("mtm:notation-redraw"));
 
       nextURL = getNextURL(nextDoc);
 
@@ -134,18 +132,18 @@
         finished = true;
         button.textContent = "All articles loaded";
         button.disabled = true;
-        status.textContent = "All articles loaded.";
+        setStatus("");
         sentinel.remove();
       } else {
         button.textContent = "Load more articles";
         button.disabled = false;
-        status.textContent = "";
+        setStatus("");
       }
     } catch (error) {
       console.error("[infinite-scroll]", error);
       button.textContent = "Try loading again";
       button.disabled = false;
-      status.textContent = error.message;
+      setStatus(error.message);
     } finally {
       loading = false;
     }

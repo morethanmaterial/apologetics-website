@@ -1,0 +1,59 @@
+{{- $current := . -}}
+{{- $mainSections := site.Params.mainSections | default (slice "posts") -}}
+{{- $pages := where site.RegularPages "Type" "in" $mainSections -}}
+{{- $prev := false -}}
+{{- $next := false -}}
+{{- $seriesTerm := false -}}
+{{- $seriesPages := slice -}}
+{{- $usingSeries := false -}}
+
+{{- range ($current.GetTerms "series") -}}
+  {{- if not $seriesTerm -}}
+    {{- $termPages := where .Pages "Type" "in" $mainSections -}}
+    {{- $termPages = $termPages.ByWeight -}}
+    {{- if gt (len $termPages) 1 -}}
+      {{- $seriesTerm = . -}}
+      {{- $seriesPages = $termPages -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with $seriesTerm -}}
+  {{- range $index, $page := $seriesPages -}}
+    {{- if eq $page.RelPermalink $current.RelPermalink -}}
+      {{- $usingSeries = true -}}
+      {{- if gt $index 0 -}}
+        {{- $prev = index $seriesPages (sub $index 1) -}}
+      {{- end -}}
+      {{- if lt (add $index 1) (len $seriesPages) -}}
+        {{- $next = index $seriesPages (add $index 1) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if and (not $usingSeries) (gt (len $pages) 1) (in $pages $current) -}}
+  {{- with $pages.Next $current -}}
+    {{- $prev = . -}}
+  {{- end -}}
+  {{- with $pages.Prev $current -}}
+    {{- $next = . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if or $prev $next -}}
+<nav class="paginav{{ if $usingSeries }} mtm-series-paginav{{ end }}">
+  {{- with $prev }}
+  <a class="prev" href="{{ .RelPermalink }}">
+    <span class="title">« {{ if $usingSeries }}Previous in series{{ else }}{{ i18n "prev_page" }}{{ end }}</span>
+    <span>{{- .Name -}}</span>
+  </a>
+  {{- end }}
+  {{- with $next }}
+  <a class="next" href="{{ .RelPermalink }}">
+    <span class="title">{{ if $usingSeries }}Next in series{{ else }}{{ i18n "next_page" }}{{ end }} »</span>
+    <span>{{- .Name -}}</span>
+  </a>
+  {{- end }}
+</nav>
+{{- end }}

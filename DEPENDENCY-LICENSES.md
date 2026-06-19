@@ -10,6 +10,7 @@ separate from this repository's own software, content, and brand licenses.
 | Hugo | Static site generator/build tool | External build tool | Apache-2.0 |
 | PaperMod | Hugo theme | `themes/PaperMod/` | MIT |
 | RoughJS | Hand-drawn SVG outlines | `assets/js/rough.js` | MIT |
+| Rough Notation | Hand-drawn text annotations | `assets/js/rough-notation.js` | MIT |
 
 ## Hugo
 
@@ -52,6 +53,18 @@ Vendored file: `assets/js/rough.js`
 Notice:
 
 Copyright (c) Preet Shihn
+
+## Rough Notation
+
+Project: https://github.com/rough-stuff/rough-notation
+
+License: MIT
+
+Vendored file: `assets/js/rough-notation.js`
+
+Notice:
+
+Copyright (c) 2020 Preet Shihn
 
 ## MIT License Text
 

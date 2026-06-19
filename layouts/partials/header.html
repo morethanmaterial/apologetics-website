@@ -2,13 +2,16 @@
   <nav class="nav">
     <div class="logo">
       {{- $label_text := (site.Params.label.text | default site.Title) -}}
+      {{- $headerLogo := resources.Get "svg/relative-logo.svg" -}}
       {{- if site.Title }}
-      <a href="{{ "" | absLangURL }}" accesskey="h" title="{{ $label_text }} (Alt + H)">
+      <a href="{{ "" | relLangURL }}" accesskey="h" title="{{ $label_text }} (Alt + H)">
         {{- if site.Params.label.icon }}
         <img src="{{ site.Params.label.icon | absURL }}" alt="" aria-label="logo"
           height="{{- site.Params.label.iconHeight | default "30" -}}">
+        {{- else if $headerLogo }}
+        <img class="mtm-header-logo" src="{{ $headerLogo.RelPermalink }}" alt="" aria-hidden="true">
         {{- end -}}
-        {{- $label_text -}}
+        <span class="mtm-header-logo-text">{{- $label_text -}}</span>
       </a>
       {{- end }}
 
@@ -39,7 +42,7 @@
     </div>
 
     {{- $currentPage := . -}}
-    {{- $pageURL := $currentPage.Permalink | absLangURL -}}
+    {{- $pageURL := $currentPage.RelPermalink -}}
 
     <ul id="menu">
       {{- range site.Menus.main }}
@@ -48,7 +51,7 @@
         {{- with .Params.class }}{{ $classes = $classes | append . }}{{ end -}}
         {{- $active := or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) -}}
         {{- if and .URL (not .HasChildren) -}}
-          {{- $menuURL := .URL | absLangURL -}}
+          {{- $menuURL := .URL | relLangURL -}}
           {{- $active = or $active (eq $menuURL $pageURL) -}}
         {{- end -}}
 
@@ -63,10 +66,10 @@
 
             <ul class="submenu">
               {{- range .Children }}
-                {{- $childURL := .URL | absLangURL -}}
+                {{- $childURL := .URL | relLangURL -}}
                 {{- $childActive := or ($currentPage.IsMenuCurrent "main" .) (eq $childURL $pageURL) -}}
                 <li>
-                  <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }}">
+                  <a href="{{ .URL | relLangURL }}" title="{{ .Title | default .Name }}">
                     <span{{ if $childActive }} class="active"{{ end }}>
                       {{- .Pre -}}{{- .Name -}}{{- .Post -}}
                     </span>
@@ -76,7 +79,7 @@
             </ul>
           {{- else }}
             {{- $isSearch := eq .Identifier "search" -}}
-            <a href="{{ .URL | absLangURL }}"
+            <a href="{{ .URL | relLangURL }}"
                title="{{ .Title | default .Name }}{{- if $isSearch }} (Alt + /){{- end }}"
                {{- if $isSearch }} accesskey="/"{{- end }}>
               <span{{ if $active }} class="active"{{ end }}>

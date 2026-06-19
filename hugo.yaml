@@ -31,7 +31,9 @@ outputs:
     - JSON
 
 taxonomies:
+  type: types
   category: categories
+  topic: topics
   tag: tags
   series: series
 
@@ -73,7 +75,7 @@ params:
     Content: >
       Making the Christian case that reality is more than material.
 
-  ShowReadingTime: true
+  ShowReadingTime: false
   ShowShareButtons: true
   ShowPostNavLinks: true
   ShowBreadCrumbs: false
@@ -106,6 +108,7 @@ params:
 
   fuseOpts:
     isCaseSensitive: false
+    includeMatches: true
     shouldSort: true
     location: 0
     distance: 1000
@@ -116,6 +119,9 @@ params:
       - permalink
       - summary
       - content
+      - types
+      - categories
+      - topics
 
 privacy:
   youtube:
@@ -144,14 +150,20 @@ menu:
     - identifier: explore-articles
       parent: explore
       name: Articles
-      url: /posts/
+      url: /types/article/
       weight: 10
+
+    - identifier: explore-videos
+      parent: explore
+      name: Videos
+      url: /types/video/
+      weight: 15
 
     - identifier: explore-archive
       parent: explore
       name: Archive
       url: /archives/
-      weight: 20
+      weight: 25
 
     - identifier: explore-categories
       parent: explore
@@ -162,13 +174,18 @@ menu:
     - identifier: explore-topics
       parent: explore
       name: Topics
-      url: /tags/
+      url: /topics/
       weight: 40
+
+    - identifier: community
+      name: Community
+      url: /community/
+      weight: 35
 
     - identifier: resources
       name: Resources
       url: /resources/
-      weight: 30
+      weight: 36
 
     - identifier: search
       name: Search
@@ -180,9 +197,9 @@ menu:
       url: /about/
       weight: 50
 
-    - identifier: donate
-      name: Donate
-      url: /donate/
+    - identifier: support
+      name: Support
+      url: /support/
       weight: 60
       params:
-        class: menu-button menu-button-donate
+        class: menu-button menu-button-support

@@ -1,5 +1,53 @@
 <script>
 (function () {
+  var root = document.documentElement;
+  var pending = {
+    rough: true,
+    notation: true
+  };
+
+  root.classList.add("mtm-effects-booting", "mtm-effects-no-transition", "mtm-rough-booting", "mtm-notation-booting");
+
+  function reveal() {
+    root.classList.remove("mtm-effects-booting", "mtm-rough-booting", "mtm-notation-booting");
+    root.classList.add("mtm-effects-ready");
+
+    window.requestAnimationFrame(function () {
+      window.setTimeout(function () {
+        root.classList.remove("mtm-effects-no-transition");
+      }, 80);
+    });
+  }
+
+  window.mtmMarkEffectReady = function (name) {
+    if (name && Object.prototype.hasOwnProperty.call(pending, name)) {
+      pending[name] = false;
+      root.classList.remove("mtm-" + name + "-booting");
+    }
+
+    if (!pending.rough && !pending.notation) {
+      reveal();
+    }
+  };
+
+  window.setTimeout(reveal, 1800);
+})();
+</script>
+
+<style>
+html.mtm-effects-booting body {
+  opacity: 0 !important;
+}
+
+html.mtm-effects-no-transition *,
+html.mtm-effects-no-transition *::before,
+html.mtm-effects-no-transition *::after {
+  transition: none !important;
+}
+</style>
+
+<script>
+(function () {
   var CHOICE_KEY = "mtm-theme-choice";
 
   function systemWantsDark() {

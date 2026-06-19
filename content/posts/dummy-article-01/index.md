@@ -2,9 +2,14 @@
 title: "Dummy Article 01"
 date: "2026-06-01T12:00:00-07:00"
 draft: false
+types:
+  - Article
 description: "Temporary dummy article 01 for testing pagination and infinite scroll."
 summary: "Temporary dummy article 01 for testing the More Than Material layout."
 tags:
+  - test
+  - apologetics
+topics:
   - test
   - apologetics
 categories:

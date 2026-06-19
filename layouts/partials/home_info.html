@@ -3,88 +3,204 @@
 {{- $vortexTop := resources.Get "svg/relative-vortex-top.svg" -}}
 {{- $vortexFallback := resources.Get "svg/relative-vortex.svg" -}}
 {{- $logoFallback := resources.Get "svg/relative-logo.svg" -}}
+{{- $quoteIcon := resources.Get "svg/bounded-quote-icon.svg" -}}
 {{- $youtubeIcon := resources.Get "svg/bounded-youtube-icon.svg" -}}
 {{- $tiktokIcon := resources.Get "svg/bounded-tiktok-icon.svg" -}}
 {{- $instagramIcon := resources.Get "svg/bounded-instagram-icon.svg" -}}
+{{- $xIcon := resources.Get "svg/bounded-x-icon.svg" -}}
+{{- $discordIcon := resources.Get "svg/bounded-discord-icon.svg" -}}
 {{- $podcastIcon := resources.Get "svg/bounded-microphone-icon.svg" -}}
 {{- $polemicsIcon := resources.Get "svg/relative-polemics-logo.svg" -}}
 
-<article class="first-entry home-info mtm-home-hero">
-  <div class="mtm-home-copy">
-    <header class="entry-header">
-      {{- $heroTitle := site.Params.homeInfoParams.Title | default site.Title -}}
-      {{- if eq $heroTitle "More Than Material" -}}
-      <h1 class="mtm-hero-title">
-        <span class="mtm-title-line">More&nbsp;Than</span>
-        <span class="mtm-title-line">Material</span>
-      </h1>
-      {{- else -}}
-      <h1 class="mtm-hero-title">{{ $heroTitle | markdownify }}</h1>
-      {{- end -}}
-    </header>
+{{- $posts := where site.RegularPages "Section" "posts" -}}
+{{- $posts = where $posts "Params.hiddenInHomeList" "!=" true -}}
+{{- $videoTypes := slice "video" "short" "livestream" -}}
+{{- $videos := slice -}}
+{{- $articles := slice -}}
+{{- range $posts.ByDate.Reverse -}}
+  {{- $types := .Params.types | default (slice "Article") -}}
+  {{- if not (reflect.IsSlice $types) -}}{{- $types = slice $types -}}{{- end -}}
+  {{- $mediaType := lower (printf "%s" (index $types 0)) -}}
+  {{- if in $videoTypes $mediaType -}}
+    {{- $videos = $videos | append . -}}
+  {{- else -}}
+    {{- $articles = $articles | append . -}}
+  {{- end -}}
+{{- end -}}
 
-    {{- with site.Params.homeInfoParams.Content }}
-    <div class="entry-content">
-      {{ . | markdownify }}
+{{- $latestVideo := false -}}
+{{- with $videos -}}{{- $latestVideo = index . 0 -}}{{- end -}}
+{{- $recentArticles := first 3 $articles -}}
+
+{{- $videoTitle := site.Params.homeVideo.title | default "Does Consciousness Require More?" -}}
+{{- $videoSummary := site.Params.homeVideo.summary | default "Exploring why consciousness points to more than material processes." -}}
+{{- $videoURL := site.Params.homeVideo.url | default "https://youtube.com/@morethanmaterial" -}}
+{{- $videoDuration := site.Params.homeVideo.duration | default "15:42" -}}
+{{- $transcriptURL := site.Params.homeVideo.transcriptURL | default "/resources/" -}}
+{{- $videoPageURL := $transcriptURL -}}
+{{- with $latestVideo -}}
+  {{- $videoTitle = .Title -}}
+  {{- $videoSummary = .Summary | plainify | htmlUnescape -}}
+  {{- $videoPageURL = .RelPermalink -}}
+  {{- with .Params.video -}}
+    {{- with .url -}}{{- $videoURL = . -}}{{- end -}}
+    {{- with .duration -}}{{- $videoDuration = . -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $communityURL := site.Params.community.url | default "/community/" -}}
+
+<div class="mtm-home-page">
+  <article class="first-entry home-info mtm-home-hero">
+    <div class="mtm-home-copy">
+      <header class="entry-header">
+        {{- $heroTitle := site.Params.homeInfoParams.Title | default site.Title -}}
+        {{- if eq $heroTitle "More Than Material" -}}
+        <h1 class="mtm-hero-title">
+          <span class="mtm-title-line">More&nbsp;Than</span>
+          <span class="mtm-title-line">Material</span>
+        </h1>
+        {{- else -}}
+        <h1 class="mtm-hero-title">{{ $heroTitle | markdownify }}</h1>
+        {{- end -}}
+      </header>
+
+      {{- with site.Params.homeInfoParams.Content }}
+      <div class="entry-content">
+        {{ . | markdownify }}
+      </div>
+      {{- end }}
+
+    </div>
+
+    {{- if and $cross $vortexBottom $vortexTop }}
+    <div class="mtm-icon-anchor" aria-hidden="true">
+      <div class="mtm-icon-stage">
+        <img class="mtm-icon-layer mtm-vortex-back" src="{{ $vortexTop.RelPermalink }}" alt="">
+        <img class="mtm-icon-layer mtm-cross-full" src="{{ $cross.RelPermalink }}" alt="">
+        <img class="mtm-icon-layer mtm-vortex-front" src="{{ $vortexBottom.RelPermalink }}" alt="">
+      </div>
+    </div>
+    {{- else if and $cross $vortexFallback }}
+    <div class="mtm-icon-anchor" aria-hidden="true">
+      <div class="mtm-icon-stage">
+        <img class="mtm-icon-layer mtm-cross-full" src="{{ $cross.RelPermalink }}" alt="">
+        <img class="mtm-icon-layer mtm-vortex-front" src="{{ $vortexFallback.RelPermalink }}" alt="">
+      </div>
+    </div>
+    {{- else if $logoFallback }}
+    <div class="mtm-icon-anchor" aria-hidden="true">
+      <div class="mtm-icon-stage">
+        <img class="mtm-icon-layer mtm-logo-fallback" src="{{ $logoFallback.RelPermalink }}" alt="">
+      </div>
     </div>
     {{- end }}
-  </div>
 
-  {{- if and $cross $vortexBottom $vortexTop }}
-  <div class="mtm-icon-anchor" aria-hidden="true">
-    <div class="mtm-icon-stage">
-      <img class="mtm-icon-layer mtm-vortex-back" src="{{ $vortexTop.RelPermalink }}" alt="">
-      <img class="mtm-icon-layer mtm-cross-full" src="{{ $cross.RelPermalink }}" alt="">
-      <img class="mtm-icon-layer mtm-vortex-front" src="{{ $vortexBottom.RelPermalink }}" alt="">
-    </div>
-  </div>
-  {{- else if and $cross $vortexFallback }}
-  <div class="mtm-icon-anchor" aria-hidden="true">
-    <div class="mtm-icon-stage">
-      <img class="mtm-icon-layer mtm-cross-full" src="{{ $cross.RelPermalink }}" alt="">
-      <img class="mtm-icon-layer mtm-vortex-front" src="{{ $vortexFallback.RelPermalink }}" alt="">
-    </div>
-  </div>
-  {{- else if $logoFallback }}
-  <div class="mtm-icon-anchor" aria-hidden="true">
-    <div class="mtm-icon-stage">
-      <img class="mtm-icon-layer mtm-logo-fallback" src="{{ $logoFallback.RelPermalink }}" alt="">
-    </div>
-  </div>
-  {{- end }}
+    <div class="mtm-home-links-row" aria-label="More Than Material channels">
+      <div class="mtm-home-socials">
+        <a class="mtm-social-button mtm-social-youtube mtm-rough-button" href="https://youtube.com/@morethanmaterial" target="_blank" rel="noopener noreferrer">
+          {{- with $youtubeIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+          <span>YouTube</span>
+        </a>
+        <a class="mtm-social-button mtm-social-tiktok mtm-rough-button" href="https://www.tiktok.com/@morethanmaterial" target="_blank" rel="noopener noreferrer">
+          {{- with $tiktokIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+          <span>TikTok</span>
+        </a>
+        <a class="mtm-social-button mtm-social-instagram mtm-rough-button" href="https://www.instagram.com/morethanmaterial" target="_blank" rel="noopener noreferrer">
+          {{- with $instagramIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+          <span>Instagram</span>
+        </a>
+        <a class="mtm-social-button mtm-social-x mtm-rough-button" href="https://x.com/morethanmaterial" target="_blank" rel="noopener noreferrer">
+          {{- with $xIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+          <span>X/Twitter</span>
+        </a>
+        <a class="mtm-social-button mtm-social-podcast mtm-rough-button" href="https://podfollow.com/" target="_blank" rel="noopener noreferrer">
+          {{- with $podcastIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+          <span>Podcast</span>
+        </a>
+      </div>
 
-  <div class="mtm-home-links-row" aria-label="More Than Material social links">
-    <div class="mtm-home-socials">
-      <a class="mtm-social-button mtm-social-youtube" href="https://youtube.com/@morethanmaterial" target="_blank" rel="noopener noreferrer">
-        {{- with $youtubeIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
-        <span>YouTube</span>
-      </a>
-      <a class="mtm-social-button mtm-social-tiktok" href="https://www.tiktok.com/@morethanmaterial" target="_blank" rel="noopener noreferrer">
-        {{- with $tiktokIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
-        <span>TikTok</span>
-      </a>
-      <a class="mtm-social-button mtm-social-instagram" href="https://www.instagram.com/morethanmaterial" target="_blank" rel="noopener noreferrer">
-        {{- with $instagramIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
-        <span>Instagram</span>
-      </a>
-      <a class="mtm-social-button mtm-social-podcast" href="https://podfollow.com/" target="_blank" rel="noopener noreferrer">
-        {{- with $podcastIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
-        <span>Podcast</span>
+      <a class="mtm-polemics-button mtm-rough-button" href="{{ "/polemics/" | relLangURL }}">
+        <span class="mtm-polemics-label">
+          <span>More from MTM:</span>
+          {{- with $polemicsIcon }}<img class="mtm-polemics-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+          <span>MTM Polemics</span>
+        </span>
       </a>
     </div>
+  </article>
 
-    <a class="mtm-polemics-button" href="/polemics/">
-      <span class="mtm-polemics-label">
-        <span>More from MTM:</span>
-        {{- with $polemicsIcon }}<img class="mtm-polemics-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
-        <span>MTM Polemics</span>
-      </span>
-    </a>
+  <div class="mtm-home-sections" aria-label="Featured More Than Material content">
+    <section class="mtm-home-cell mtm-home-video-cell" aria-labelledby="mtm-home-video-title">
+      <h2 id="mtm-home-video-title">Latest Videos</h2>
+      <article class="mtm-feature-card mtm-video-card mtm-rough-card">
+        <a class="mtm-video-thumb" href="{{ $videoPageURL | relLangURL }}" aria-label="Open {{ $videoTitle }}">
+          <span class="mtm-video-thumb-title">{{ $videoTitle }}</span>
+          <span class="mtm-video-thumb-mark">?</span>
+          <span class="mtm-video-duration">{{ $videoDuration }}</span>
+        </a>
+        <span class="mtm-card-title">{{ $videoTitle }}</span>
+        <span class="mtm-card-summary">{{ $videoSummary }}</span>
+        <a class="mtm-video-button mtm-rough-button" href="{{ $videoURL }}" target="_blank" rel="noopener noreferrer">
+          {{- with $youtubeIcon }}<img class="mtm-home-cta-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+          <span>Watch on YouTube</span>
+        </a>
+      </article>
+    </section>
+
+    <section class="mtm-home-cell mtm-home-articles-cell" aria-labelledby="mtm-home-articles-title">
+      <h2 id="mtm-home-articles-title">Recent Articles</h2>
+      <div class="mtm-home-article-list">
+        {{- range $recentArticles }}
+          {{- $types := .Params.types | default (slice "Article") -}}
+          {{- if not (reflect.IsSlice $types) -}}{{- $types = slice $types -}}{{- end -}}
+          {{- $typeLabel := printf "%s" (index $types 0) -}}
+          {{- $topicLabel := "" -}}
+          {{- with .Params.topics -}}{{- $topicLabel = printf "%s" (index . 0) -}}{{- else -}}{{- with .Params.tags -}}{{- $topicLabel = printf "%s" (index . 0) -}}{{- end -}}{{- end -}}
+        <a class="mtm-home-article-link mtm-rough-card" href="{{ .RelPermalink }}">
+          <span class="mtm-home-article-main">
+            <span class="mtm-card-title">{{ .Title }}</span>
+            <span class="mtm-card-meta">
+              {{- .Date.Format "Jan 2, 2006" -}}
+            </span>
+          </span>
+          <span class="mtm-home-badges">
+            <span class="mtm-type-pill">{{ $typeLabel }}</span>
+            {{- with $topicLabel }}<span class="mtm-topic-pill">{{ . }}</span>{{- end }}
+          </span>
+        </a>
+        {{- end }}
+      </div>
+      <a class="mtm-home-view-all mtm-rough-card" href="{{ "/types/article/" | relLangURL }}">View all articles →</a>
+    </section>
+
+    <section class="mtm-home-cell mtm-home-community-cell" aria-labelledby="mtm-home-community-title">
+      <h2 id="mtm-home-community-title">Community</h2>
+      <div class="mtm-home-community-panel mtm-rough-card">
+        <div>
+          <h3>Join the Discussion</h3>
+        </div>
+
+        <div class="mtm-community-features" aria-label="Community features">
+          <div><span class="mtm-community-icon">?</span><span>Ask Questions</span><small>Bring your doubts, objections, and big questions.</small></div>
+          <div><span class="mtm-community-icon">#</span><span>Connect With Others</span><small>Join thoughtful conversations about faith, reason, truth, and reality.</small></div>
+          <div><span class="mtm-community-icon">✓</span><span>Vote on Topics</span><small>Help choose future videos and articles.</small></div>
+        </div>
+
+        <div class="mtm-community-actions">
+          <a class="mtm-community-join mtm-rough-button" href="{{ if hasPrefix $communityURL "http" }}{{ $communityURL }}{{ else }}{{ $communityURL | relLangURL }}{{ end }}"{{ if hasPrefix $communityURL "http" }} target="_blank" rel="noopener noreferrer"{{ end }}>
+            {{- with $discordIcon }}<img class="mtm-community-join-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+            <span>Join the Discord</span>
+          </a>
+        </div>
+      </div>
+    </section>
   </div>
-</article>
 
-{{/* MTM recent articles heading start */}}
-<section class="mtm-recent-articles-heading" aria-labelledby="mtm-recent-articles-title">
-  <h2 id="mtm-recent-articles-title">Recent Articles</h2>
-</section>
-{{/* MTM recent articles heading end */}}
+  <aside class="mtm-home-quote mtm-rough-card" aria-label="More Than Material scripture highlight">
+    {{- with $quoteIcon }}<span class="mtm-home-quote-logo" style="--mtm-quote-icon: url('{{ .RelPermalink }}');" aria-hidden="true"></span>{{- end }}
+    <div>
+      <p>"To illuminate for everyone the stewardship of this mystery, which for ages past was kept hidden in God, who created all things"</p>
+      <small>Ephesians 3:9, Berean Standard Bible</small>
+    </div>
+  </aside>
+</div>

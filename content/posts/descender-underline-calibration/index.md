@@ -2,9 +2,14 @@
 title: "Descender Underline Calibration"
 date: "2026-06-16T00:00:00Z"
 draft: false
+types:
+  - Article
 description: "Temporary typography test article for descender underline calibration."
 summary: "Temporary test article for checking rough underlines around descender letters."
 tags:
+  - test
+  - typography
+topics:
   - test
   - typography
 categories:

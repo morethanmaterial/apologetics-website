@@ -2,9 +2,15 @@
 title: "Test Post: Why More Than Material?"
 date: 2026-06-15T12:00:00-07:00
 draft: false
+types:
+  - Article
 description: "A short test article for the More Than Material site."
 summary: "A short test article to verify that PaperMod, posts, tags, categories, and article pages are working."
 tags:
+  - apologetics
+  - materialism
+  - philosophy
+topics:
   - apologetics
   - materialism
   - philosophy
