@@ -131,6 +131,23 @@
   max-width: 100% !important;
 }
 
+.mtm-home-page .mtm-hero-emphasis {
+  color: var(--mtm-purple, #744eaa) !important;
+  text-decoration: underline !important;
+  text-decoration-color: var(--mtm-yellow, #ffcc4d) !important;
+  text-decoration-line: underline !important;
+  text-decoration-thickness: 5px !important;
+  text-underline-offset: 0.08em !important;
+}
+
+.mtm-home-page .mtm-hero-emphasis[data-mtm-notation-load-animate].mtm-notation-target {
+  text-decoration: none !important;
+}
+
+html.mtm-notation-ready .mtm-home-page .mtm-hero-emphasis:not([data-mtm-notation-load-animate]) {
+  text-decoration: none !important;
+}
+
 .mtm-home-page .entry-content,
 .mtm-home-page .entry-content p {
   color: var(--mtm-ink, #292f33) !important;
@@ -1288,6 +1305,122 @@ body:has(.mtm-home-page) .mtm-site-footer {
   text-overflow: ellipsis !important;
 }
 
+/* Match the recent-posts column to the other two enclosed homepage panels. */
+.mtm-home-articles-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: var(--mtm-home-card-gap, 0.75rem) !important;
+  padding: clamp(0.75rem, 1.7vw, 1rem) !important;
+}
+
+.mtm-home-articles-panel .mtm-home-view-all {
+  --mtm-rough-fill: var(--mtm-blue, #55acee);
+  background: var(--mtm-blue, #55acee) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--mtm-paper, #fff) !important;
+  font-family: "Comic Sans MS", "Comic Sans", cursive !important;
+  margin-top: 0 !important;
+  outline: 0 !important;
+}
+
+.mtm-home-articles-panel .mtm-home-view-all,
+.mtm-home-articles-panel .mtm-home-view-all:visited,
+.mtm-home-articles-panel .mtm-home-view-all:hover,
+.mtm-home-articles-panel .mtm-home-view-all:focus-visible,
+.mtm-home-articles-panel .mtm-home-view-all * {
+  color: var(--mtm-paper, #fff) !important;
+}
+
+html.mtm-rough-ready .mtm-home-articles-panel .mtm-home-view-all {
+  background: transparent !important;
+}
+
+.mtm-home-view-all-arrow {
+  display: inline-block !important;
+  font-family: "Shantell Sans", "Comic Sans MS", "Comic Sans", cursive !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  margin-left: 0.28em !important;
+}
+
+/* Use the same inset, full-width CTA treatment in all three homepage panels. */
+.mtm-video-card .mtm-video-button {
+  align-self: stretch !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+}
+
+/* Configurable homepage video media; no generated demo artwork. */
+.mtm-home-video-cell .mtm-video-thumb {
+  background: var(--mtm-red, #dd2e44) !important;
+  border: 3px solid transparent !important;
+  border-radius: var(--mtm-card-radius, 8px) !important;
+  color: var(--mtm-ink, #292f33) !important;
+  display: block !important;
+  overflow: visible !important;
+  padding: 0 !important;
+}
+
+.mtm-home-video-cell .mtm-video-thumb::before,
+.mtm-home-video-cell .mtm-video-thumb::after {
+  content: none !important;
+  display: none !important;
+}
+
+.mtm-home-video-cell .mtm-video-image {
+  border-radius: inherit !important;
+  display: block !important;
+  height: 100% !important;
+  margin: 0 !important;
+  object-fit: cover !important;
+  width: 100% !important;
+}
+
+.mtm-home-video-cell .mtm-video-duration {
+  align-items: center !important;
+  background: var(--mtm-ink, #292f33) !important;
+  bottom: 0.55rem !important;
+  color: var(--mtm-paper, #fff) !important;
+  display: inline-flex !important;
+  font-family: "Nunito", sans-serif !important;
+  font-weight: 900 !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  min-height: 1.45rem !important;
+  opacity: 1 !important;
+  padding: 0.25rem 0.4rem !important;
+  position: absolute !important;
+  right: 0.55rem !important;
+  visibility: visible !important;
+  -webkit-text-fill-color: var(--mtm-paper, #fff) !important;
+  z-index: 4 !important;
+}
+
+/* Center each homepage column heading without stretching its underline. */
+.mtm-home-sections .mtm-home-cell > h2,
+.mtm-home-sections .mtm-home-community-cell > h2 {
+  align-self: center !important;
+  justify-self: center !important;
+  text-align: center !important;
+}
+
+/* Keep the emphasized hero phrase purple after all light/dark hero rules resolve. */
+.mtm-home-page .first-entry.home-info .entry-header .mtm-hero-title {
+  font-size: clamp(2.9rem, 5.8vw, 4.8rem) !important;
+}
+
+.mtm-home-page .mtm-hero-title .mtm-title-line + .mtm-title-line {
+  margin-top: 0.2em !important;
+}
+
+.mtm-home-page .first-entry.home-info .entry-header .mtm-hero-title .mtm-hero-emphasis,
+html.mtm-dark .mtm-home-page .first-entry.home-info .entry-header .mtm-hero-title .mtm-hero-emphasis,
+body.dark .mtm-home-page .first-entry.home-info .entry-header .mtm-hero-title .mtm-hero-emphasis {
+  color: var(--mtm-purple, #744eaa) !important;
+  -webkit-text-fill-color: var(--mtm-purple, #744eaa) !important;
+}
+
 @media (max-width: 520px) {
   .mtm-list-card-heading,
   .mtm-home-article-link {
@@ -1305,4 +1438,990 @@ body:has(.mtm-home-page) .mtm-site-footer {
     flex-wrap: wrap !important;
     max-width: 100% !important;
   }
+}
+
+/* Hero channels belong to the copy column; artwork matches that full stack. */
+.mtm-home-page .first-entry.home-info.mtm-home-hero {
+  align-items: stretch !important;
+  grid-template-areas: "copy icon" !important;
+  grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr) !important;
+}
+
+.mtm-home-page .mtm-home-copy {
+  align-self: stretch !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+.mtm-home-page .mtm-home-copy .mtm-home-links-row {
+  display: block !important;
+  grid-area: auto !important;
+  margin-top: clamp(1rem, 2vw, 1.4rem) !important;
+  max-width: none !important;
+  width: 100% !important;
+}
+
+.mtm-home-page .mtm-home-copy .mtm-home-socials {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.65rem !important;
+  width: 100% !important;
+}
+
+.mtm-home-page .mtm-icon-anchor {
+  align-self: stretch !important;
+  aspect-ratio: auto !important;
+  height: auto !important;
+  min-height: 100% !important;
+  width: 100% !important;
+}
+
+.mtm-home-page .mtm-icon-stage {
+  height: 100% !important;
+  max-height: none !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+@media (max-width: 820px) {
+  .mtm-home-page .first-entry.home-info.mtm-home-hero {
+    grid-template-areas:
+      "copy"
+      "icon" !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .mtm-home-page .mtm-home-copy .mtm-home-links-row {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    max-width: 28rem !important;
+  }
+
+  .mtm-home-page .mtm-home-copy .mtm-home-socials {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .mtm-home-page .mtm-icon-anchor {
+    aspect-ratio: 1 / 1 !important;
+    height: min(62vw, 285px) !important;
+    min-height: 0 !important;
+    width: min(62vw, 285px) !important;
+  }
+}
+
+@media (max-width: 440px) {
+  .mtm-home-page .mtm-home-copy .mtm-home-socials {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Keep hero channels on one desktop row and a 3-by-2 mobile grid. */
+.mtm-home-page .mtm-home-copy .mtm-home-socials {
+  flex-wrap: nowrap !important;
+}
+
+.mtm-home-page .mtm-home-copy .mtm-social-button {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  padding-left: 0.55rem !important;
+  padding-right: 0.55rem !important;
+}
+
+@media (max-width: 820px) {
+  .mtm-home-page .mtm-home-copy .mtm-home-socials,
+  .mtm-home-page .mtm-home-copy .mtm-home-links-row .mtm-home-socials {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .mtm-home-page .mtm-home-copy .mtm-social-button {
+    font-size: clamp(0.72rem, 2.6vw, 0.92rem) !important;
+    gap: 0.3rem !important;
+    padding-left: 0.35rem !important;
+    padding-right: 0.35rem !important;
+    width: 100% !important;
+  }
+
+  .mtm-home-page .mtm-home-copy .mtm-social-icon {
+    height: 1em !important;
+    width: 1em !important;
+  }
+}
+
+/* Let the square cross artwork use the full height of the desktop copy stack. */
+@media (min-width: 821px) {
+  .mtm-home-page .first-entry.home-info.mtm-home-hero {
+    column-gap: clamp(0.75rem, 1.8vw, 1.5rem) !important;
+    grid-template-columns: minmax(0, 1.3fr) minmax(250px, 0.7fr) !important;
+  }
+
+  .mtm-home-page .mtm-icon-anchor,
+  .mtm-home-page .mtm-icon-stage {
+    height: 100% !important;
+    width: 100% !important;
+  }
+}
+
+/* Lead with the cross artwork in the stacked mobile hero. */
+@media (max-width: 820px) {
+  .mtm-home-page .first-entry.home-info.mtm-home-hero {
+    grid-template-areas:
+      "icon"
+      "copy" !important;
+  }
+}
+
+/* Keep mobile channel controls comfortably sized within the six-track layout. */
+@media (max-width: 820px) {
+  .mtm-home-page .mtm-home-copy .mtm-social-button {
+    font-size: 0.9rem !important;
+    gap: 0.35rem !important;
+    height: 3.15rem !important;
+    min-height: 3.15rem !important;
+    padding: 0.45rem 0.4rem !important;
+  }
+
+  .mtm-home-page .mtm-home-copy .mtm-social-icon {
+    flex: 0 0 auto !important;
+    height: 1.2em !important;
+    min-width: 1.2em !important;
+    object-fit: contain !important;
+    width: 1.2em !important;
+  }
+
+  .mtm-home-page .mtm-home-copy .mtm-social-button > span {
+    flex: 0 0 auto !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .mtm-home-page .mtm-home-copy .mtm-social-button {
+    font-size: 0.78rem !important;
+    gap: 0.2rem !important;
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+  }
+
+  .mtm-home-page .mtm-home-copy .mtm-social-icon {
+    height: 1.1em !important;
+    min-width: 1.1em !important;
+    width: 1.1em !important;
+  }
+}
+
+@media (max-width: 440px) {
+  .mtm-home-page .mtm-home-copy .mtm-home-socials,
+  .mtm-home-page .mtm-home-copy .mtm-home-links-row .mtm-home-socials {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Preserve complete social icons and labels at desktop widths. */
+@media (min-width: 821px) {
+  .mtm-home-page .first-entry.home-info.mtm-home-hero {
+    column-gap: clamp(1.25rem, 3vw, 2.75rem) !important;
+    grid-template-columns: minmax(0, 1.45fr) minmax(190px, 0.55fr) !important;
+  }
+
+  .mtm-home-page .mtm-home-copy .mtm-home-socials {
+    display: grid !important;
+    gap: clamp(0.35rem, 0.7vw, 0.6rem) !important;
+    grid-template-columns: repeat(5, minmax(max-content, 1fr)) !important;
+  }
+
+  .mtm-home-page .mtm-home-copy .mtm-social-button {
+    font-size: clamp(0.82rem, 1.05vw, 1rem) !important;
+    gap: 0.35rem !important;
+    overflow: visible !important;
+    padding-left: 0.45rem !important;
+    padding-right: 0.45rem !important;
+    white-space: nowrap !important;
+  }
+
+  .mtm-home-page .mtm-home-copy .mtm-social-icon {
+    flex: 0 0 auto !important;
+    height: 1.15em !important;
+    min-width: 1.15em !important;
+    object-fit: contain !important;
+    overflow: visible !important;
+    width: 1.15em !important;
+  }
+
+  .mtm-home-page .mtm-home-copy .mtm-social-button > span {
+    flex: 0 0 auto !important;
+  }
+}
+
+/* Six tracks center a three-button row and the remaining two-button row. */
+@media (max-width: 820px) {
+  .mtm-home-page .mtm-home-copy .mtm-home-socials,
+  .mtm-home-page .mtm-home-copy .mtm-home-links-row .mtm-home-socials {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  }
+
+  .mtm-home-page .mtm-home-copy .mtm-social-button {
+    grid-column: span 2 !important;
+    min-width: 0 !important;
+  }
+
+  .mtm-home-page .mtm-home-copy .mtm-social-button:nth-child(4) {
+    grid-column: 2 / span 2 !important;
+  }
+}
+
+/* Final desktop hero proportions: artwork matches title, subtitle, and channels. */
+@media (min-width: 821px) {
+  .mtm-home-page .first-entry.home-info.mtm-home-hero {
+    column-gap: clamp(0.75rem, 1.8vw, 1.5rem) !important;
+    grid-template-areas:
+      "copy icon"
+      "links icon" !important;
+    grid-template-columns: minmax(0, 1.3fr) minmax(250px, 0.7fr) !important;
+    grid-template-rows: auto auto !important;
+    row-gap: clamp(0.85rem, 1.5vw, 1.2rem) !important;
+  }
+
+  .mtm-home-page .mtm-icon-anchor,
+  .mtm-home-page .mtm-icon-stage {
+    height: 100% !important;
+    width: 100% !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row {
+    align-self: start !important;
+    display: block !important;
+    grid-area: links !important;
+    margin: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-home-socials {
+    display: grid !important;
+    gap: clamp(0.35rem, 0.7vw, 0.6rem) !important;
+    grid-template-columns: repeat(5, minmax(max-content, 1fr)) !important;
+    width: 100% !important;
+  }
+}
+
+/* Mobile hero order: copy, compact artwork, then centered 3+2 channels. */
+@media (max-width: 820px) {
+  .mtm-home-page .first-entry.home-info.mtm-home-hero {
+    grid-template-areas:
+      "copy"
+      "icon"
+      "links" !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto auto !important;
+    row-gap: clamp(0.45rem, 2.2vw, 0.75rem) !important;
+  }
+
+  .mtm-home-page .mtm-home-copy {
+    grid-area: copy !important;
+  }
+
+  .mtm-home-page .mtm-icon-anchor {
+    align-self: center !important;
+    grid-area: icon !important;
+    height: clamp(185px, 48vw, 235px) !important;
+    margin: 0 auto !important;
+    min-height: 0 !important;
+    width: clamp(185px, 48vw, 235px) !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row {
+    display: block !important;
+    grid-area: links !important;
+    margin: 0 auto !important;
+    max-width: 28rem !important;
+    width: 100% !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-home-socials {
+    display: grid !important;
+    gap: 0.6rem !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    width: 100% !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-button {
+    font-size: 0.9rem !important;
+    gap: 0.35rem !important;
+    grid-column: span 2 !important;
+    height: 3.15rem !important;
+    min-height: 3.15rem !important;
+    min-width: 0 !important;
+    padding: 0.45rem 0.4rem !important;
+    width: 100% !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-button:nth-child(4) {
+    grid-column: 2 / span 2 !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-icon {
+    flex: 0 0 auto !important;
+    height: 1.2em !important;
+    min-width: 1.2em !important;
+    object-fit: contain !important;
+    width: 1.2em !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .mtm-home-page .mtm-home-links-row .mtm-social-button {
+    font-size: 0.78rem !important;
+    gap: 0.2rem !important;
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+  }
+}
+
+/* Discord completes the mobile 3-by-2 social grid and stays mobile-only. */
+.mtm-home-page .mtm-home-links-row .mtm-social-discord {
+  --mtm-rough-fill: var(--mtm-purple, #744eaa);
+  background: var(--mtm-purple, #744eaa) !important;
+  display: none !important;
+}
+
+@media (max-width: 820px) {
+  .mtm-home-page .mtm-home-links-row .mtm-social-discord {
+    display: inline-flex !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-button:nth-child(4) {
+    grid-column: span 2 !important;
+  }
+}
+
+/* Match Discord to the inset rough-fill treatment used by every social CTA. */
+.mtm-home-page .mtm-home-links-row .mtm-social-discord,
+.mtm-home-page .mtm-home-links-row .mtm-social-discord:visited,
+.mtm-home-page .mtm-home-links-row .mtm-social-discord:hover,
+.mtm-home-page .mtm-home-links-row .mtm-social-discord:focus-visible,
+.mtm-home-page .mtm-home-links-row .mtm-social-discord * {
+  color: var(--mtm-paper, #fff) !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: var(--mtm-paper, #fff) !important;
+}
+
+.mtm-home-page .mtm-home-links-row .mtm-social-discord .mtm-social-icon {
+  filter: none !important;
+}
+
+html.mtm-rough-ready .mtm-home-page .mtm-home-links-row .mtm-social-discord {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Mobile footer groups: heading first, horizontal wrapping links beneath. */
+@media (max-width: 560px) {
+  .mtm-site-footer .mtm-footer-nav {
+    display: grid !important;
+    gap: 1.15rem !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .mtm-site-footer .mtm-footer-nav > div {
+    align-items: center !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem 1rem !important;
+  }
+
+  .mtm-site-footer .mtm-footer-nav > div > h2 {
+    flex: 0 0 100% !important;
+    margin: 0 0 0.12rem !important;
+    width: 100% !important;
+  }
+
+  .mtm-site-footer .mtm-footer-nav > div > a {
+    flex: 0 0 auto !important;
+    width: auto !important;
+  }
+}
+
+/* Footer social SVGs are white assets; recolor them against the light paper. */
+html:not(.mtm-dark) body:not(.dark) .mtm-site-footer .mtm-footer-social img {
+  filter: brightness(0) saturate(100%) !important;
+  opacity: 0.84 !important;
+}
+
+html.mtm-dark .mtm-site-footer .mtm-footer-social img,
+body.dark .mtm-site-footer .mtm-footer-social img {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* Discord is available in the compact mobile Connect list only. */
+.mtm-site-footer .mtm-footer-discord {
+  display: none !important;
+}
+
+@media (max-width: 560px) {
+  .mtm-site-footer .mtm-footer-discord {
+    display: inline-flex !important;
+  }
+}
+
+/* Mobile navigation is a permanently pinned logo/theme/hamburger row. */
+#mtm-mobile-menu-toggle {
+  display: none !important;
+}
+
+#mtm-mobile-support-link {
+  display: none !important;
+}
+
+@media (max-width: 820px) {
+  html body {
+    padding-top: var(--mtm-mobile-header-h, 68px) !important;
+  }
+
+  body > header.header,
+  header.header,
+  .header {
+    left: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+    position: fixed !important;
+    right: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+    transition: none !important;
+    width: 100% !important;
+    will-change: auto !important;
+    z-index: 100000 !important;
+  }
+
+  .header .nav,
+  .header nav {
+    display: flex !important;
+    height: auto !important;
+    min-height: 68px !important;
+    padding: 0.45rem clamp(0.65rem, 3vw, 1rem) !important;
+    position: relative !important;
+  }
+
+  .header .logo {
+    display: flex !important;
+    min-height: 0 !important;
+    width: 100% !important;
+  }
+
+  .header .logo > a {
+    flex: 1 1 auto !important;
+    font-size: clamp(1.05rem, 4.8vw, 1.4rem) !important;
+    min-width: 0 !important;
+  }
+
+  .header .mtm-header-logo {
+    height: 2.25rem !important;
+    width: 2.25rem !important;
+  }
+
+  .header .mtm-header-logo-text {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .header .logo-switches {
+    flex: 0 0 auto !important;
+    gap: 0.2rem !important;
+    margin-left: auto !important;
+  }
+
+  .header #mtm-theme-toggle,
+  .header #mtm-mobile-support-link,
+  .header #mtm-mobile-menu-toggle {
+    align-items: center !important;
+    appearance: none !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: currentColor !important;
+    cursor: pointer !important;
+    height: 40px !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    min-height: 40px !important;
+    min-width: 40px !important;
+    padding: 0 !important;
+    width: 40px !important;
+  }
+
+  .header #mtm-mobile-support-link {
+    display: inline-flex !important;
+    text-decoration: none !important;
+  }
+
+  .header #mtm-mobile-menu-toggle {
+    display: inline-flex !important;
+  }
+
+  .mtm-mobile-support-icon {
+    color: var(--mtm-red, #dd2e44) !important;
+    display: block !important;
+    height: 25px !important;
+    stroke: var(--mtm-ink, #292f33) !important;
+    stroke-linejoin: round !important;
+    stroke-width: 1.5px !important;
+    width: 25px !important;
+  }
+
+  html.mtm-dark .mtm-mobile-support-icon,
+  body.dark .mtm-mobile-support-icon {
+    stroke: var(--mtm-paper, #fff) !important;
+  }
+
+  .mtm-mobile-menu-icon {
+    display: block !important;
+    height: 25px !important;
+    stroke: currentColor !important;
+    width: 25px !important;
+  }
+
+  .mtm-mobile-menu-close-icon {
+    display: none !important;
+  }
+
+  html.mtm-mobile-menu-open .mtm-mobile-menu-open-icon {
+    display: none !important;
+  }
+
+  html.mtm-mobile-menu-open .mtm-mobile-menu-close-icon {
+    display: block !important;
+  }
+
+  .header #menu {
+    --mtm-rough-fill: var(--mtm-paper, #fff);
+    align-items: stretch !important;
+    background: var(--mtm-paper, #fff) !important;
+    border: 3px solid var(--mtm-ink, #292f33) !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+    display: none !important;
+    flex-direction: column !important;
+    gap: 0.15rem !important;
+    left: clamp(0.6rem, 3vw, 1rem) !important;
+    margin: 0 !important;
+    max-height: calc(100dvh - var(--mtm-mobile-header-h, 68px) - 0.75rem) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding: 0.55rem !important;
+    position: absolute !important;
+    right: clamp(0.6rem, 3vw, 1rem) !important;
+    top: calc(100% + 0.2rem) !important;
+    white-space: normal !important;
+    width: auto !important;
+    z-index: 100100 !important;
+  }
+
+  html.mtm-mobile-menu-open .header #menu {
+    display: flex !important;
+  }
+
+  html.mtm-dark .header #menu,
+  body.dark .header #menu {
+    --mtm-rough-fill: var(--mtm-dark-panel, #22272e);
+    background: var(--mtm-dark-panel, #22272e) !important;
+    border-color: var(--mtm-paper, #fff) !important;
+  }
+
+  .header #menu > li {
+    align-items: stretch !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .header #menu > li > a,
+  .header #menu > li > .menu-trigger,
+  .header #menu > li.menu-button > a {
+    box-sizing: border-box !important;
+    justify-content: flex-start !important;
+    min-height: 46px !important;
+    padding: 0.65rem 0.8rem !important;
+    text-align: left !important;
+    width: 100% !important;
+  }
+
+  .header #menu .submenu {
+    box-sizing: border-box !important;
+    left: auto !important;
+    margin: 0.15rem 0 0.35rem 0.7rem !important;
+    max-width: calc(100% - 0.7rem) !important;
+    min-width: 0 !important;
+    position: static !important;
+    top: auto !important;
+    width: calc(100% - 0.7rem) !important;
+  }
+
+  .header #menu .submenu a {
+    white-space: normal !important;
+  }
+
+  /*
+    In hamburger mode the Explore children are part of the panel, not a
+    desktop flyout. Keep them in normal document flow so they cannot spawn
+    offscreen or inherit stale rough-outline geometry.
+  */
+  html.mtm-mobile-menu-open .header #menu .menu-item-has-children {
+    min-width: 0 !important;
+    overflow: visible !important;
+    position: relative !important;
+  }
+
+  html.mtm-mobile-menu-open .header #menu .menu-item-has-children > .submenu,
+  html.mtm-mobile-menu-open.mtm-touch-menu-mode .header #menu .menu-item-has-children > .submenu,
+  html.mtm-mobile-menu-open .header #menu .menu-item-has-children > .submenu.mtm-roughened {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
+    clip: auto !important;
+    clip-path: none !important;
+    display: none !important;
+    flex-direction: column !important;
+    gap: 0.1rem !important;
+    inset: auto !important;
+    isolation: auto !important;
+    left: auto !important;
+    margin: 0.05rem 0 0.35rem !important;
+    max-height: none !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    padding: 0.1rem 0 0.15rem 0.9rem !important;
+    pointer-events: auto !important;
+    position: static !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+    visibility: visible !important;
+    width: 100% !important;
+    z-index: auto !important;
+  }
+
+  html.mtm-mobile-menu-open .header #menu .menu-item-has-children.submenu-open > .submenu,
+  html.mtm-mobile-menu-open.mtm-touch-menu-mode .header #menu .menu-item-has-children.submenu-open > .submenu,
+  html.mtm-mobile-menu-open .header #menu .menu-item-has-children.submenu-open > .submenu.mtm-roughened {
+    display: flex !important;
+  }
+
+  html.mtm-mobile-menu-open .header #menu .submenu.mtm-roughened > .mtm-local-rough-svg {
+    display: none !important;
+  }
+
+  html.mtm-mobile-menu-open .header #menu .submenu li,
+  html.mtm-mobile-menu-open .header #menu .submenu a {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  html.mtm-mobile-menu-open .header #menu .submenu a {
+    align-items: center !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    min-height: 40px !important;
+    padding: 0.55rem 0.7rem !important;
+  }
+}
+
+/* Mobile hero should begin immediately below the rough header divider. */
+@media (max-width: 820px) {
+  .mtm-home-page .first-entry.home-info.mtm-home-hero {
+    padding-top: 0 !important;
+  }
+
+  .mtm-home-page .first-entry.home-info.mtm-home-hero .entry-header,
+  .mtm-home-page .first-entry.home-info.mtm-home-hero .entry-header h1,
+  .mtm-home-page .first-entry.home-info.mtm-home-hero .entry-header h1.mtm-hero-title {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .mtm-home-page .first-entry.home-info.mtm-home-hero .entry-header h1,
+  .mtm-home-page .first-entry.home-info.mtm-home-hero .entry-header h1.mtm-hero-title {
+    font-size: clamp(3.05rem, 13.1vw, 4.35rem) !important;
+    letter-spacing: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    overflow: visible !important;
+    text-align: center !important;
+  }
+}
+
+/* Homepage section headings align to the left edge of their own cards. */
+.mtm-home-sections .mtm-home-cell > h2,
+.mtm-home-sections .mtm-home-community-cell > h2 {
+  align-self: flex-start !important;
+  justify-self: start !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  text-align: left !important;
+}
+
+/* Square post icons for homepage cards and post-list cards. */
+.mtm-post-square-icon {
+  align-self: start !important;
+  aspect-ratio: 1 / 1 !important;
+  background: color-mix(in srgb, var(--mtm-ink, #292f33) 7%, transparent) !important;
+  border: 3px solid transparent !important;
+  border-radius: 6px !important;
+  box-sizing: border-box !important;
+  color: var(--mtm-ink, #292f33) !important;
+  display: block !important;
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+  position: relative !important;
+  z-index: 6 !important;
+}
+
+.mtm-post-square-icon img {
+  border-radius: inherit !important;
+  display: block !important;
+  height: 100% !important;
+  margin: 0 !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  width: 100% !important;
+}
+
+.mtm-home-post-square-icon {
+  width: clamp(3.2rem, 8vw, 4.1rem) !important;
+}
+
+.mtm-list-post-square-icon {
+  width: clamp(4.4rem, 12vw, 6.1rem) !important;
+}
+
+html.mtm-dark .mtm-post-square-icon,
+body.dark .mtm-post-square-icon {
+  background: color-mix(in srgb, var(--mtm-paper, #fff) 8%, transparent) !important;
+  border-color: transparent !important;
+  color: var(--mtm-paper, #fff) !important;
+}
+
+html.mtm-dark .mtm-home-video-cell .mtm-video-thumb,
+body.dark .mtm-home-video-cell .mtm-video-thumb {
+  border-color: transparent !important;
+  color: var(--mtm-paper, #fff) !important;
+}
+
+html.mtm-rough-ready .mtm-post-square-icon,
+html.mtm-rough-ready .mtm-home-video-cell .mtm-video-thumb {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.mtm-post-square-icon > .mtm-local-rough-svg,
+.mtm-home-video-cell .mtm-video-thumb > .mtm-local-rough-svg {
+  z-index: 3 !important;
+}
+
+.mtm-post-square-icon > .mtm-local-rough-svg .mtm-rough-fill-path,
+.mtm-home-video-cell .mtm-video-thumb > .mtm-local-rough-svg .mtm-rough-fill-path {
+  fill: transparent !important;
+}
+
+.mtm-post-square-icon > img,
+.mtm-home-video-cell .mtm-video-thumb > img {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.mtm-home-article-link {
+  align-items: start !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  position: relative !important;
+}
+
+.mtm-home-article-link:has(> .mtm-home-post-square-icon) {
+  grid-template-columns: clamp(3.2rem, 8vw, 4.1rem) minmax(0, 1fr) auto !important;
+}
+
+.mtm-home-article-link:has(> .mtm-home-post-square-icon) > .mtm-home-post-square-icon {
+  grid-column: 1 !important;
+  grid-row: 1 / span 2 !important;
+}
+
+.mtm-home-article-link:has(> .mtm-home-post-square-icon) > .mtm-home-article-main {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+}
+
+.mtm-home-article-link > .mtm-home-badges,
+.mtm-home-article-link:has(> .mtm-home-post-square-icon) > .mtm-home-badges {
+  align-self: start !important;
+  grid-column: -2 / -1 !important;
+  grid-row: 1 !important;
+  justify-self: end !important;
+  margin: 0 !important;
+  position: relative !important;
+  z-index: 7 !important;
+}
+
+.mtm-list-card {
+  align-items: start !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  position: relative !important;
+}
+
+.mtm-list-card:has(> .mtm-list-post-square-icon) {
+  column-gap: clamp(0.75rem, 2vw, 1rem) !important;
+  grid-template-columns: clamp(4.4rem, 12vw, 6.1rem) minmax(0, 1fr) !important;
+}
+
+.mtm-list-card:has(> .mtm-list-post-square-icon) > .mtm-list-post-square-icon {
+  grid-column: 1 !important;
+  grid-row: 1 / span 5 !important;
+}
+
+.mtm-list-card:has(> .mtm-list-post-square-icon) > :not(.mtm-list-post-square-icon):not(.entry-link):not(.mtm-local-rough-svg):not(.mtm-rough-header-line-svg) {
+  grid-column: 2 !important;
+}
+
+.mtm-list-card-heading {
+  align-items: start !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+.mtm-list-type-pill {
+  align-self: start !important;
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-self: end !important;
+  margin-top: 0 !important;
+}
+
+@media (max-width: 520px) {
+  .mtm-home-badges {
+    align-self: start !important;
+    grid-row: 1 !important;
+    justify-self: end !important;
+    margin-top: 0 !important;
+  }
+
+  .mtm-list-type-pill {
+    justify-self: end !important;
+  }
+}
+
+/* Mobile homepage socials: one icon-only row of square buttons. */
+@media (max-width: 820px) {
+  .mtm-home-page .mtm-home-links-row {
+    max-width: min(100%, 29rem) !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-home-socials,
+  .mtm-home-page .mtm-home-copy .mtm-home-socials,
+  .mtm-home-page .mtm-home-copy .mtm-home-links-row .mtm-home-socials {
+    align-items: center !important;
+    display: grid !important;
+    gap: clamp(0.18rem, 1.25vw, 0.45rem) !important;
+    grid-auto-columns: minmax(0, 1fr) !important;
+    grid-auto-flow: column !important;
+    grid-auto-rows: 0 !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    justify-items: stretch !important;
+    row-gap: 0 !important;
+    width: 100% !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-button,
+  .mtm-home-page .mtm-home-copy .mtm-social-button {
+    aspect-ratio: 1 / 1 !important;
+    grid-column: auto / span 1 !important;
+    grid-row: 1 !important;
+    height: auto !important;
+    justify-content: center !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    padding: clamp(0.3rem, 1.55vw, 0.52rem) !important;
+    width: 100% !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-button:nth-child(1),
+  .mtm-home-page .mtm-home-copy .mtm-social-button:nth-child(1) {
+    grid-column: 1 / span 1 !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-button:nth-child(2),
+  .mtm-home-page .mtm-home-copy .mtm-social-button:nth-child(2) {
+    grid-column: 2 / span 1 !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-button:nth-child(3),
+  .mtm-home-page .mtm-home-copy .mtm-social-button:nth-child(3) {
+    grid-column: 3 / span 1 !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-button:nth-child(4),
+  .mtm-home-page .mtm-home-copy .mtm-social-button:nth-child(4) {
+    grid-column: 4 / span 1 !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-button:nth-child(5),
+  .mtm-home-page .mtm-home-copy .mtm-social-button:nth-child(5) {
+    grid-column: 5 / span 1 !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-button:nth-child(6),
+  .mtm-home-page .mtm-home-copy .mtm-social-button:nth-child(6) {
+    grid-column: 6 / span 1 !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-button > span,
+  .mtm-home-page .mtm-home-copy .mtm-social-button > span {
+    clip: rect(0 0 0 0) !important;
+    border: 0 !important;
+    height: 1px !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    position: absolute !important;
+    white-space: nowrap !important;
+    width: 1px !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-icon,
+  .mtm-home-page .mtm-home-copy .mtm-social-icon {
+    flex: 0 0 auto !important;
+    height: clamp(1.2rem, 5.4vw, 1.7rem) !important;
+    min-width: 0 !important;
+    width: clamp(1.2rem, 5.4vw, 1.7rem) !important;
+  }
+}
+
+.mtm-video-button,
+.mtm-video-button:visited,
+.mtm-video-button:hover,
+.mtm-video-button:focus-visible,
+.mtm-video-button * {
+  color: var(--mtm-paper, #fff) !important;
+  -webkit-text-fill-color: var(--mtm-paper, #fff) !important;
+}
+
+.mtm-video-button,
+.mtm-home-view-all,
+.mtm-community-join,
+.mtm-community-actions .mtm-community-join,
+.mtm-video-button *,
+.mtm-home-view-all *,
+.mtm-community-join *,
+.mtm-community-actions .mtm-community-join * {
+  font-family: "Comic Sans MS", "Comic Sans", cursive !important;
+  font-weight: 900 !important;
 }

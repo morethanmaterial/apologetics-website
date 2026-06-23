@@ -607,6 +607,11 @@ body:not(.dark) nav a {
   pointer-events: none !important;
 }
 
+.rough-annotation.mtm-notation-animated {
+  contain: none !important;
+  overflow: visible !important;
+}
+
 .rough-annotation:not(.mtm-notation-type-highlight) path,
 .rough-annotation:not(.mtm-notation-type-highlight) line,
 .rough-annotation:not(.mtm-notation-type-highlight) polyline {

@@ -345,8 +345,7 @@
   }
 
   function isMobileHeaderMode() {
-    return viewportWidth() <= MOBILE_MAX_WIDTH &&
-      (mobileUserAgent() || (mobileSizedScreen() && touchOnlyPointer()));
+    return viewportWidth() <= MOBILE_MAX_WIDTH;
   }
 
   function getHeader() {
@@ -399,22 +398,12 @@
 
     root.classList.add("mtm-mobile-header-enabled", "mtm-mobile-header-active");
 
-    var delta = y - lastY;
     var atTop = y <= 2;
 
     root.classList.toggle("mtm-header-at-top", atTop);
     root.classList.toggle("mtm-header-scrolled", !atTop);
 
-    if (atTop || menuIsOpen()) {
-      setOffset(0);
-    } else {
-      /*
-        This is the important part:
-        the header offset follows scroll delta directly.
-        No threshold hide class, no half-lock, no pop.
-      */
-      setOffset(offset + delta);
-    }
+    setOffset(0);
 
     lastY = y;
   }
@@ -456,3 +445,102 @@
 })();
 </script>
 <!-- End MTM smooth scroll-driven mobile header -->
+
+<!-- MTM mobile hamburger navigation -->
+<script>
+(function () {
+  var root = document.documentElement;
+  var toggle = document.getElementById("mtm-mobile-menu-toggle");
+  var menu = document.getElementById("menu");
+  var media = window.matchMedia("(max-width: 820px)");
+  var touchStartX = 0;
+  var touchStartY = 0;
+  var touchStartedOutsideMenu = false;
+
+  if (!toggle || !menu) return;
+
+  function isOpen() {
+    return root.classList.contains("mtm-mobile-menu-open");
+  }
+
+  function isInsideMenuControl(target) {
+    return !!target && (menu.contains(target) || toggle.contains(target));
+  }
+
+  function closeSubmenus() {
+    menu.querySelectorAll(".submenu-open").forEach(function (item) {
+      item.classList.remove("submenu-open");
+      var trigger = item.querySelector(":scope > .menu-trigger");
+      if (trigger) trigger.setAttribute("aria-expanded", "false");
+    });
+  }
+
+  function setOpen(open) {
+    open = !!open && media.matches;
+    root.classList.toggle("mtm-mobile-menu-open", open);
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    toggle.setAttribute("aria-label", open ? "Close navigation menu" : "Open navigation menu");
+
+    if (!open) closeSubmenus();
+
+    if (open) {
+      window.requestAnimationFrame(function () {
+        document.dispatchEvent(new CustomEvent("mtm:rough-redraw"));
+        window.setTimeout(function () {
+          document.dispatchEvent(new CustomEvent("mtm:rough-redraw"));
+        }, 80);
+      });
+    }
+  }
+
+  toggle.addEventListener("click", function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    setOpen(!isOpen());
+  });
+
+  menu.addEventListener("click", function (event) {
+    if (event.target.closest("a")) setOpen(false);
+  });
+
+  document.addEventListener("click", function (event) {
+    if (!isOpen()) return;
+    if (!isInsideMenuControl(event.target)) setOpen(false);
+  });
+
+  document.addEventListener("pointerdown", function (event) {
+    if (!isOpen() || !media.matches) return;
+    if (!isInsideMenuControl(event.target)) setOpen(false);
+  }, true);
+
+  document.addEventListener("touchstart", function (event) {
+    if (!isOpen() || !media.matches) return;
+
+    var touch = event.touches && event.touches[0];
+    touchStartX = touch ? touch.clientX : 0;
+    touchStartY = touch ? touch.clientY : 0;
+    touchStartedOutsideMenu = !isInsideMenuControl(event.target);
+
+    if (touchStartedOutsideMenu) setOpen(false);
+  }, { capture: true, passive: true });
+
+  document.addEventListener("touchmove", function (event) {
+    if (!isOpen() || !media.matches || !touchStartedOutsideMenu) return;
+    if (!event.touches || !event.touches.length) return;
+
+    var dx = Math.abs(event.touches[0].clientX - touchStartX);
+    var dy = Math.abs(event.touches[0].clientY - touchStartY);
+
+    if (dx > 4 || dy > 4) setOpen(false);
+  }, { capture: true, passive: true });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") setOpen(false);
+  });
+
+  media.addEventListener("change", function () {
+    setOpen(false);
+  });
+})();
+</script>
+<!-- End MTM mobile hamburger navigation -->

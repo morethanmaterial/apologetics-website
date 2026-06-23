@@ -73,7 +73,19 @@ params:
   homeInfoParams:
     Title: "More Than Material"
     Content: >
-      Making the Christian case that reality is more than material.
+      Exploring reality, meaning, and the God behind it all.
+
+  # Homepage featured video. Leave image empty to show the red placeholder.
+  homeVideo:
+    image: ""
+    duration: "15:42"
+    title: "Does Consciousness Require More?"
+    description: "Exploring why consciousness points to more than material processes."
+    link: "https://youtube.com/@morethanmaterial"
+
+  homeQuote:
+    quote: "To illuminate for everyone the stewardship of this mystery, which for ages past was kept hidden in God, who created all things"
+    reference: "Ephesians 3:9, Berean Standard Bible"
 
   ShowReadingTime: false
   ShowShareButtons: true

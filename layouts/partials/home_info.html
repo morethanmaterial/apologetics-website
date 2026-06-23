@@ -10,44 +10,31 @@
 {{- $xIcon := resources.Get "svg/bounded-x-icon.svg" -}}
 {{- $discordIcon := resources.Get "svg/bounded-discord-icon.svg" -}}
 {{- $podcastIcon := resources.Get "svg/bounded-microphone-icon.svg" -}}
-{{- $polemicsIcon := resources.Get "svg/relative-polemics-logo.svg" -}}
 
 {{- $posts := where site.RegularPages "Section" "posts" -}}
 {{- $posts = where $posts "Params.hiddenInHomeList" "!=" true -}}
 {{- $videoTypes := slice "video" "short" "livestream" -}}
-{{- $videos := slice -}}
 {{- $articles := slice -}}
 {{- range $posts.ByDate.Reverse -}}
   {{- $types := .Params.types | default (slice "Article") -}}
   {{- if not (reflect.IsSlice $types) -}}{{- $types = slice $types -}}{{- end -}}
   {{- $mediaType := lower (printf "%s" (index $types 0)) -}}
-  {{- if in $videoTypes $mediaType -}}
-    {{- $videos = $videos | append . -}}
-  {{- else -}}
+  {{- if not (in $videoTypes $mediaType) -}}
     {{- $articles = $articles | append . -}}
   {{- end -}}
 {{- end -}}
 
-{{- $latestVideo := false -}}
-{{- with $videos -}}{{- $latestVideo = index . 0 -}}{{- end -}}
 {{- $recentArticles := first 3 $articles -}}
 
-{{- $videoTitle := site.Params.homeVideo.title | default "Does Consciousness Require More?" -}}
-{{- $videoSummary := site.Params.homeVideo.summary | default "Exploring why consciousness points to more than material processes." -}}
-{{- $videoURL := site.Params.homeVideo.url | default "https://youtube.com/@morethanmaterial" -}}
-{{- $videoDuration := site.Params.homeVideo.duration | default "15:42" -}}
-{{- $transcriptURL := site.Params.homeVideo.transcriptURL | default "/resources/" -}}
-{{- $videoPageURL := $transcriptURL -}}
-{{- with $latestVideo -}}
-  {{- $videoTitle = .Title -}}
-  {{- $videoSummary = .Summary | plainify | htmlUnescape -}}
-  {{- $videoPageURL = .RelPermalink -}}
-  {{- with .Params.video -}}
-    {{- with .url -}}{{- $videoURL = . -}}{{- end -}}
-    {{- with .duration -}}{{- $videoDuration = . -}}{{- end -}}
-  {{- end -}}
-{{- end -}}
+{{- $videoTitle := site.Params.homeVideo.title | default "Featured video" -}}
+{{- $videoDescription := site.Params.homeVideo.description | default "" -}}
+{{- $videoLink := site.Params.homeVideo.link | default "https://youtube.com/@morethanmaterial" -}}
+{{- $videoImage := site.Params.homeVideo.image | default "" -}}
+{{- $videoDuration := site.Params.homeVideo.duration -}}
+{{- $videoIsExternal := hasPrefix $videoLink "http" -}}
 {{- $communityURL := site.Params.community.url | default "/community/" -}}
+{{- $homeQuote := site.Params.homeQuote.quote | default "To illuminate for everyone the stewardship of this mystery, which for ages past was kept hidden in God, who created all things" -}}
+{{- $homeQuoteReference := site.Params.homeQuote.reference | default "Ephesians 3:9, Berean Standard Bible" -}}
 
 <div class="mtm-home-page">
   <article class="first-entry home-info mtm-home-hero">
@@ -55,9 +42,9 @@
       <header class="entry-header">
         {{- $heroTitle := site.Params.homeInfoParams.Title | default site.Title -}}
         {{- if eq $heroTitle "More Than Material" -}}
-        <h1 class="mtm-hero-title">
-          <span class="mtm-title-line">More&nbsp;Than</span>
-          <span class="mtm-title-line">Material</span>
+        <h1 class="mtm-hero-title" aria-label="Reality is more than material.">
+          <span class="mtm-title-line"><span>Reality&nbsp;is&nbsp;</span><span class="mtm-hero-emphasis" data-mtm-notation-load-animate data-mtm-notation-duration="950">more</span></span>
+          <span class="mtm-title-line mtm-hero-emphasis" data-mtm-notation-load-animate data-mtm-notation-duration="950">than&nbsp;material.</span>
         </h1>
         {{- else -}}
         <h1 class="mtm-hero-title">{{ $heroTitle | markdownify }}</h1>
@@ -117,30 +104,28 @@
           {{- with $podcastIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
           <span>Podcast</span>
         </a>
+        <a class="mtm-social-button mtm-social-discord mtm-rough-button" href="{{ if hasPrefix $communityURL "http" }}{{ $communityURL }}{{ else }}{{ $communityURL | relLangURL }}{{ end }}"{{ if hasPrefix $communityURL "http" }} target="_blank" rel="noopener noreferrer"{{ end }}>
+          {{- with $discordIcon }}<img class="mtm-social-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
+          <span>Discord</span>
+        </a>
       </div>
-
-      <a class="mtm-polemics-button mtm-rough-button" href="{{ "/polemics/" | relLangURL }}">
-        <span class="mtm-polemics-label">
-          <span>More from MTM:</span>
-          {{- with $polemicsIcon }}<img class="mtm-polemics-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
-          <span>MTM Polemics</span>
-        </span>
-      </a>
     </div>
+
   </article>
 
   <div class="mtm-home-sections" aria-label="Featured More Than Material content">
     <section class="mtm-home-cell mtm-home-video-cell" aria-labelledby="mtm-home-video-title">
-      <h2 id="mtm-home-video-title">Latest Videos</h2>
+      <h2 id="mtm-home-video-title">Featured Video</h2>
       <article class="mtm-feature-card mtm-video-card mtm-rough-card">
-        <a class="mtm-video-thumb" href="{{ $videoPageURL | relLangURL }}" aria-label="Open {{ $videoTitle }}">
-          <span class="mtm-video-thumb-title">{{ $videoTitle }}</span>
-          <span class="mtm-video-thumb-mark">?</span>
-          <span class="mtm-video-duration">{{ $videoDuration }}</span>
+        <a class="mtm-video-thumb{{ if not $videoImage }} mtm-video-thumb-placeholder{{ end }}" href="{{ if $videoIsExternal }}{{ $videoLink }}{{ else }}{{ $videoLink | relLangURL }}{{ end }}" aria-label="Open {{ $videoTitle }}"{{ if $videoIsExternal }} target="_blank" rel="noopener noreferrer"{{ end }}>
+          {{- with $videoImage }}
+          <img class="mtm-video-image" src="{{ . | safeURL }}" alt="{{ $videoTitle }} video thumbnail">
+          {{- end }}
+          {{- with $videoDuration }}<span class="mtm-video-duration">{{ . }}</span>{{- end }}
         </a>
         <span class="mtm-card-title">{{ $videoTitle }}</span>
-        <span class="mtm-card-summary">{{ $videoSummary }}</span>
-        <a class="mtm-video-button mtm-rough-button" href="{{ $videoURL }}" target="_blank" rel="noopener noreferrer">
+        {{- with $videoDescription }}<span class="mtm-card-summary">{{ . }}</span>{{- end }}
+        <a class="mtm-video-button mtm-rough-button" href="{{ if $videoIsExternal }}{{ $videoLink }}{{ else }}{{ $videoLink | relLangURL }}{{ end }}"{{ if $videoIsExternal }} target="_blank" rel="noopener noreferrer"{{ end }}>
           {{- with $youtubeIcon }}<img class="mtm-home-cta-icon" src="{{ .RelPermalink }}" alt="" aria-hidden="true">{{- end }}
           <span>Watch on YouTube</span>
         </a>
@@ -148,29 +133,32 @@
     </section>
 
     <section class="mtm-home-cell mtm-home-articles-cell" aria-labelledby="mtm-home-articles-title">
-      <h2 id="mtm-home-articles-title">Recent Articles</h2>
-      <div class="mtm-home-article-list">
-        {{- range $recentArticles }}
-          {{- $types := .Params.types | default (slice "Article") -}}
-          {{- if not (reflect.IsSlice $types) -}}{{- $types = slice $types -}}{{- end -}}
-          {{- $typeLabel := printf "%s" (index $types 0) -}}
-          {{- $topicLabel := "" -}}
-          {{- with .Params.topics -}}{{- $topicLabel = printf "%s" (index . 0) -}}{{- else -}}{{- with .Params.tags -}}{{- $topicLabel = printf "%s" (index . 0) -}}{{- end -}}{{- end -}}
-        <a class="mtm-home-article-link mtm-rough-card" href="{{ .RelPermalink }}">
-          <span class="mtm-home-article-main">
-            <span class="mtm-card-title">{{ .Title }}</span>
-            <span class="mtm-card-meta">
-              {{- .Date.Format "Jan 2, 2006" -}}
+      <h2 id="mtm-home-articles-title">Recent Posts</h2>
+      <div class="mtm-home-articles-panel mtm-rough-card">
+        <div class="mtm-home-article-list">
+          {{- range $recentArticles }}
+            {{- $types := .Params.types | default (slice "Article") -}}
+            {{- if not (reflect.IsSlice $types) -}}{{- $types = slice $types -}}{{- end -}}
+            {{- $typeLabel := printf "%s" (index $types 0) -}}
+          <a class="mtm-home-article-link mtm-rough-card" href="{{ .RelPermalink }}">
+            {{- partial "post_square_icon.html" (dict "page" . "class" "mtm-post-square-icon mtm-home-post-square-icon") -}}
+            <span class="mtm-home-article-main">
+              <span class="mtm-card-title">{{ .Title }}</span>
+              <span class="mtm-card-meta">
+                {{- .Date.Format "Jan 2, 2006" -}}
+              </span>
             </span>
-          </span>
-          <span class="mtm-home-badges">
-            <span class="mtm-type-pill">{{ $typeLabel }}</span>
-            {{- with $topicLabel }}<span class="mtm-topic-pill">{{ . }}</span>{{- end }}
-          </span>
+            <span class="mtm-home-badges">
+              <span class="mtm-type-pill">{{ $typeLabel }}</span>
+            </span>
+          </a>
+          {{- end }}
+        </div>
+        <a class="mtm-home-view-all mtm-rough-card" href="{{ "/posts/" | relLangURL }}">
+          <span class="mtm-home-view-all-label">Show all posts</span>
+          <span class="mtm-home-view-all-arrow" aria-hidden="true">→</span>
         </a>
-        {{- end }}
       </div>
-      <a class="mtm-home-view-all mtm-rough-card" href="{{ "/types/article/" | relLangURL }}">View all articles →</a>
     </section>
 
     <section class="mtm-home-cell mtm-home-community-cell" aria-labelledby="mtm-home-community-title">
@@ -199,8 +187,8 @@
   <aside class="mtm-home-quote mtm-rough-card" aria-label="More Than Material scripture highlight">
     {{- with $quoteIcon }}<span class="mtm-home-quote-logo" style="--mtm-quote-icon: url('{{ .RelPermalink }}');" aria-hidden="true"></span>{{- end }}
     <div>
-      <p>"To illuminate for everyone the stewardship of this mystery, which for ages past was kept hidden in God, who created all things"</p>
-      <small>Ephesians 3:9, Berean Standard Bible</small>
+      <p>{{ $homeQuote }}</p>
+      <small><em>- {{ $homeQuoteReference }}</em></small>
     </div>
   </aside>
 </div>

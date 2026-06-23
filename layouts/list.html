@@ -69,8 +69,7 @@
 {{- end }}
 
 <article class="{{ $class }} mtm-list-card {{ $mediaClass }}">
-  {{- $isHidden := (.Param "cover.hiddenInList") | default (.Param "cover.hidden") | default false }}
-  {{- partial "cover.html" (dict "cxt" . "IsSingle" false "isHidden" $isHidden) }}
+  {{- partial "post_square_icon.html" (dict "page" . "class" "mtm-post-square-icon mtm-list-post-square-icon") }}
   <header class="entry-header">
     <div class="mtm-list-card-heading">
       <h2 class="entry-hint-parent">

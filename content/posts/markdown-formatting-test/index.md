@@ -14,6 +14,9 @@ topics:
   - typography
 categories:
   - Testing
+cover:
+  image: "cover.jpg"
+  icon: "cover-icon.jpg"
 ---
 
 This temporary article exists to verify Markdown formatting, accent underlines, bold text, and highlighted text in both light and dark mode.

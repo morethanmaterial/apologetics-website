@@ -1,6 +1,6 @@
 ---
 title: "Dummy Article 01"
-date: "2026-06-01T12:00:00-07:00"
+date: "2026-06-23T00:57:19Z"
 draft: false
 types:
   - Article
@@ -14,6 +14,9 @@ topics:
   - apologetics
 categories:
   - Testing
+cover:
+  image: "cover.jpg"
+  icon: "cover-icon.jpg"
 ---
 
 This is **dummy article 01**.

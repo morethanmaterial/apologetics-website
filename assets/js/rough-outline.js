@@ -33,6 +33,8 @@
     ".searchResults li",
     ".mtm-rough-card",
     ".mtm-rough-button",
+    ".mtm-post-square-icon",
+    ".mtm-video-thumb",
     ".mtm-type-pill",
     ".mtm-topic-pill"
   ].join(",");
@@ -691,6 +693,7 @@
   window.addEventListener("resize", scheduleDraw, { passive: true });
   window.addEventListener("orientationchange", scheduleDraw, { passive: true });
   window.addEventListener("load", scheduleDraw);
+  document.addEventListener("mtm:rough-redraw", scheduleDraw);
 
   document.addEventListener("pointerover", function (event) {
     if (event.target.closest("#menu .menu-item-has-children")) scheduleDraw();

@@ -22,6 +22,8 @@
     ".mtm-home-cell > h2"
   ].join(",");
 
+  const heroEmphasisSelector = ".mtm-hero-emphasis";
+
   const underlineSelector = [
     ".md-content a:not(.anchor)",
     ".md-content u",
@@ -54,6 +56,12 @@
   let annotations = [];
   let lastViewportWidth = Math.round(window.innerWidth || document.documentElement.clientWidth || 0);
   const seeds = new WeakMap();
+  const loadAnimated = new WeakSet();
+  let pageFullyLoaded = document.readyState === "complete";
+  let heroLoadAnimationActive = false;
+  let pendingDrawAfterHeroLoad = false;
+  let pendingRefreshAfterHeroLoad = false;
+  let heroLoadAnimationEndTimer = 0;
 
   function beginRefresh() {
     document.documentElement.classList.add("mtm-notation-refreshing");
@@ -94,15 +102,55 @@
     return element.closest(".mtm-notation-animate, [data-mtm-notation-animate]");
   }
 
+  function notationLoadAnimationElement(element) {
+    return element.closest("[data-mtm-notation-load-animate]");
+  }
+
+  function effectsReadyForLoadAnimation() {
+    return document.documentElement.classList.contains("mtm-effects-ready") &&
+      !document.documentElement.classList.contains("mtm-effects-booting");
+  }
+
+  function loadAnimationsReady() {
+    return pageFullyLoaded && effectsReadyForLoadAnimation();
+  }
+
   function notationShouldAnimate(element) {
-    return !!notationAnimationElement(element);
+    if (notationAnimationElement(element)) return true;
+
+    const loadSource = notationLoadAnimationElement(element);
+    return !!(loadSource && loadAnimationsReady() && !loadAnimated.has(element));
   }
 
   function notationAnimationDuration(element) {
-    const source = notationAnimationElement(element);
+    const source = notationAnimationElement(element) || notationLoadAnimationElement(element);
     const value = source && source.getAttribute("data-mtm-notation-duration");
     const duration = value ? parseInt(value, 10) : 650;
     return Number.isFinite(duration) && duration > 0 ? duration : 650;
+  }
+
+  function groupedAnimationDuration(records) {
+    return records.reduce(function (total, record) {
+      return total + (record.animate ? (record.config.animationDuration || 800) : 0);
+    }, 0);
+  }
+
+  function finishHeroLoadAnimation(records) {
+    records.forEach(function (record) {
+      if (record.loadAnimate) {
+        loadAnimated.add(record.element);
+      }
+    });
+
+    heroLoadAnimationActive = false;
+    heroLoadAnimationEndTimer = 0;
+
+    if (pendingDrawAfterHeroLoad) {
+      const refresh = pendingRefreshAfterHeroLoad;
+      pendingDrawAfterHeroLoad = false;
+      pendingRefreshAfterHeroLoad = false;
+      scheduleDraw(refresh ? 0 : 20);
+    }
   }
 
   function cssVar(name, element) {
@@ -503,6 +551,7 @@
       element.classList.remove(
         "mtm-notation-target",
         "mtm-notation-heading",
+        "mtm-notation-hero-emphasis",
         "mtm-notation-underline",
         "mtm-notation-highlight",
         "mtm-notation-strike"
@@ -516,6 +565,7 @@
     installTextRectProvider(element);
 
     const animate = notationShouldAnimate(element);
+    const loadAnimate = animate && notationLoadAnimationElement(element) && !notationAnimationElement(element);
     const config = Object.assign({
       animate,
       animationDuration: animate ? notationAnimationDuration(element) : 0,
@@ -546,11 +596,17 @@
       appendHeadingDescenderSkips(annotation, element);
     }
     roundAnnotationStrokes(annotation);
-    fitAnnotationSvg(annotation);
+    if (!animate) {
+      fitAnnotationSvg(annotation);
+    }
 
     if (annotation._svg) {
       annotation._svg.classList.toggle("mtm-notation-animated", animate);
       annotation._svg.classList.toggle("mtm-notation-static", !animate);
+    }
+
+    if (loadAnimate) {
+      loadAnimated.add(element);
     }
 
     if (!animate && typeof annotation.detachListeners === "function") {
@@ -627,6 +683,112 @@
     });
   }
 
+  function createHeroEmphasisRecord(element) {
+    if (shouldSkip(element)) return null;
+
+    const loadSource = notationLoadAnimationElement(element);
+    const explicitAnimate = notationAnimationElement(element);
+    if (loadSource && !explicitAnimate && !loadAnimationsReady() && !loadAnimated.has(element)) {
+      return null;
+    }
+
+    installTextRectProvider(element);
+
+    const animate = notationShouldAnimate(element);
+    const loadAnimate = animate && loadSource && !explicitAnimate;
+    const config = {
+      animate,
+      animationDuration: animate ? notationAnimationDuration(element) : 0,
+      iterations: 1,
+      multiline: true,
+      type: "underline",
+      color: annotationColor(element, "heading"),
+      roughness: 0.9,
+      strokeWidth: 5,
+      padding: headingUnderlinePadding(element)
+    };
+
+    if (!animate) {
+      config.animate = false;
+      config.animationDuration = 0;
+    }
+
+    const annotation = roughNotation.annotate(element, config);
+    annotation._seed = seedFor(element, "mtm-notation-hero-emphasis|" + config.type);
+
+    element.classList.add("mtm-notation-target", "mtm-notation-hero-emphasis");
+    annotations.push(annotation);
+
+    if (!animate && typeof annotation.detachListeners === "function") {
+      annotation.detachListeners();
+    }
+
+    return {
+      annotation,
+      animate,
+      config,
+      element,
+      loadAnimate
+    };
+  }
+
+  function finishHeroEmphasisAnnotation(record) {
+    const annotation = record.annotation;
+    const config = record.config;
+
+    if (annotation._svg && config.type) {
+      annotation._svg.classList.add("mtm-notation-type-" + config.type);
+    }
+
+    roundAnnotationStrokes(annotation);
+    if (!record.animate) {
+      fitAnnotationSvg(annotation);
+    }
+
+    if (annotation._svg) {
+      annotation._svg.classList.toggle("mtm-notation-animated", record.animate);
+      annotation._svg.classList.toggle("mtm-notation-static", !record.animate);
+    }
+
+    if (!record.animate && typeof annotation.detachListeners === "function") {
+      annotation.detachListeners();
+    }
+  }
+
+  function annotateHeroEmphasisGroup() {
+    const records = Array.from(document.querySelectorAll(heroEmphasisSelector))
+      .map(createHeroEmphasisRecord)
+      .filter(Boolean);
+
+    if (!records.length) return;
+
+    const shouldAnimate = records.some(function (record) { return record.animate; });
+    const loadRecords = records.filter(function (record) { return record.loadAnimate; });
+
+    if (loadRecords.length) {
+      heroLoadAnimationActive = true;
+      pendingDrawAfterHeroLoad = false;
+      pendingRefreshAfterHeroLoad = false;
+      if (heroLoadAnimationEndTimer) window.clearTimeout(heroLoadAnimationEndTimer);
+    }
+
+    if (shouldAnimate && typeof roughNotation.annotationGroup === "function") {
+      roughNotation.annotationGroup(records.map(function (record) { return record.annotation; })).show();
+    } else {
+      records.forEach(function (record) {
+        record.annotation.show();
+      });
+    }
+
+    records.forEach(finishHeroEmphasisAnnotation);
+
+    if (loadRecords.length) {
+      heroLoadAnimationEndTimer = window.setTimeout(function () {
+        finishHeroLoadAnimation(loadRecords);
+      }, groupedAnimationDuration(records) + 120);
+    }
+  }
+
   function annotateHighlight(element) {
     annotate(element, "mtm-notation-highlight", {
       type: "highlight",
@@ -647,11 +809,18 @@
   }
 
   function draw(refreshing) {
+    if (heroLoadAnimationActive) {
+      pendingDrawAfterHeroLoad = true;
+      pendingRefreshAfterHeroLoad = pendingRefreshAfterHeroLoad || !!refreshing;
+      return;
+    }
+
     if (refreshing) beginRefresh();
 
     clearAnnotations();
 
     document.querySelectorAll(headingSelector).forEach(annotateHeading);
+    annotateHeroEmphasisGroup();
     document.querySelectorAll(underlineSelector).forEach(annotateUnderline);
     document.querySelectorAll(highlightSelector).forEach(annotateHighlight);
     document.querySelectorAll(strikeSelector).forEach(annotateStrike);
@@ -679,8 +848,32 @@
     }, delay || 0);
   }
 
+  function scheduleLoadAnimationWhenReady(attempt) {
+    if (!pageFullyLoaded) return;
+
+    if (effectsReadyForLoadAnimation() || (attempt || 0) > 40) {
+      window.setTimeout(function () {
+        requestAnimationFrame(function () {
+          drawNow(false);
+        });
+      }, 50);
+      return;
+    }
+
+    window.setTimeout(function () {
+      scheduleLoadAnimationWhenReady((attempt || 0) + 1);
+    }, 50);
+  }
+
   scheduleDraw();
-  window.addEventListener("load", function () { scheduleDraw(50); });
+  if (pageFullyLoaded) {
+    scheduleLoadAnimationWhenReady(0);
+  }
+
+  window.addEventListener("load", function () {
+    pageFullyLoaded = true;
+    scheduleLoadAnimationWhenReady(0);
+  });
   window.addEventListener("resize", function () {
     const width = Math.round(window.innerWidth || document.documentElement.clientWidth || 0);
     if (Math.abs(width - lastViewportWidth) < 2) return;

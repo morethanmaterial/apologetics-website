@@ -1,0 +1,30 @@
+{{- $page := .page | default . -}}
+{{- $class := .class | default "mtm-post-square-icon" -}}
+{{- $src := "" -}}
+
+{{- if not ((($page.Param "cover.hiddenInList") | default ($page.Param "cover.hidden")) | default false) -}}
+  {{- with $page.Param "cover.icon" -}}
+    {{- $src = . -}}
+  {{- else -}}
+    {{- with $page.Param "cover.image" -}}
+      {{- $src = . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if reflect.IsMap $src -}}
+  {{- $src = (or (index $src "image") (index $src "src") (index $src "url")) | default "" -}}
+{{- end -}}
+
+{{- $src = printf "%s" $src -}}
+{{- if $src -}}
+  {{- $resource := or (($page.Resources.ByType "image").GetMatch (printf "*%s*" $src)) ((resources.ByType "image").GetMatch (printf "*%s*" $src)) -}}
+  {{- if $resource -}}
+    {{- $src = $resource.RelPermalink -}}
+  {{- else if not (or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "/")) -}}
+    {{- $src = $src | relURL -}}
+  {{- end -}}
+  <span class="{{ $class }}" aria-hidden="true">
+    <img src="{{ $src | safeURL }}" alt="">
+  </span>
+{{- end -}}
