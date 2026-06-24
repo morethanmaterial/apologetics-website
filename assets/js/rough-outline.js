@@ -35,6 +35,7 @@
     ".mtm-rough-button",
     ".mtm-post-square-icon",
     ".mtm-video-thumb",
+    ".mtm-media-poster",
     ".mtm-type-pill",
     ".mtm-topic-pill"
   ].join(",");
@@ -334,12 +335,105 @@
     ].join(" ");
   }
 
-  function drawInsetFill(svg, path) {
+  function outlinePath(x, y, width, height, radius) {
+    const pillThreshold = Math.min(width, height) * 0.38;
+    if (radius >= pillThreshold) return roundedRectanglePath(x, y, width, height, radius);
+
+    const softRadius = Math.max(2.75, Math.min(radius, width * 0.08, height * 0.08, 5.75));
+    return roundedRectanglePath(x, y, width, height, softRadius);
+  }
+
+  function filledControl(element) {
+    return element.matches([
+      "#menu .menu-button > a",
+      ".mtm-social-button",
+      ".mtm-polemics-button",
+      ".mtm-channel-buttons a",
+      ".post-tags a",
+      ".terms-tags a",
+      ".infinite-scroll-button",
+      ".mtm-rough-button",
+      ".mtm-video-thumb",
+      ".mtm-media-poster",
+      ".mtm-type-pill",
+      ".mtm-topic-pill"
+    ].join(","));
+  }
+
+  function fillOverlapFor(element, strokeWidth) {
+    if (filledControl(element)) {
+      return Math.max(1.8, Math.min(2.7, strokeWidth * 0.7));
+    }
+
+    return Math.max(1.05, Math.min(1.85, strokeWidth * 0.42));
+  }
+
+  function strokeOptionsFor(element, width, height, strokeWidth) {
+    const shortest = Math.max(1, Math.min(width, height));
+    const compact = shortest < 76 || element.matches(".mtm-type-pill, .mtm-topic-pill");
+    const control = filledControl(element);
+
+    return {
+      roughness: compact ? 0.82 : 1.02,
+      bowing: compact ? 0.72 : 0.92,
+      maxRandomnessOffset: control
+        ? Math.max(0.9, Math.min(1.75, strokeWidth * 0.5, shortest * 0.036))
+        : Math.max(1.15, Math.min(2.35, strokeWidth * 0.68, shortest * 0.032))
+    };
+  }
+
+  function drawInsetFill(svg, path, overlap) {
     const fill = document.createElementNS(svgNS, "path");
     fill.setAttribute("class", "mtm-rough-fill-path");
     fill.setAttribute("d", path);
-    fill.setAttribute("stroke", "none");
+    fill.setAttribute("stroke-linecap", "round");
+    fill.setAttribute("stroke-linejoin", "round");
+    fill.setAttribute("vector-effect", "non-scaling-stroke");
+    svg.style.setProperty("--mtm-rough-fill-overlap", overlap + "px");
     svg.appendChild(fill);
+  }
+
+  function drawRoughStroke(svg, path, color, strokeWidth, seed, options) {
+    const group = rough.svg(svg).path(path, {
+      stroke: color,
+      strokeWidth,
+      roughness: options.roughness,
+      bowing: options.bowing,
+      maxRandomnessOffset: options.maxRandomnessOffset,
+      disableMultiStroke: true,
+      fill: "none",
+      preserveVertices: true,
+      seed
+    });
+
+    group.setAttribute("class", "mtm-rough-stroke-group");
+    applyPathDefaults(group);
+    svg.appendChild(group);
+  }
+
+  function cssPathValue(path) {
+    return "path(\"" + path.replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + "\")";
+  }
+
+  function prepareMediaClip(element, path) {
+    if (!element.matches(".mtm-post-square-icon, .mtm-video-thumb, .mtm-media-poster")) return;
+
+    const media = element.querySelectorAll(":scope > img, :scope > picture, :scope > video, :scope > iframe");
+    const clipPath = cssPathValue(path);
+    element.classList.toggle("mtm-rough-has-media", media.length > 0);
+    element.style.setProperty("--mtm-rough-clip-path", clipPath);
+
+    media.forEach(function (child) {
+      child.style.clipPath = clipPath;
+      child.style.webkitClipPath = clipPath;
+
+      if (child.matches("picture")) {
+        child.querySelectorAll("img").forEach(function (image) {
+          image.style.clipPath = clipPath;
+          image.style.webkitClipPath = clipPath;
+        });
+      }
+    });
   }
 
   function drawRectangle(element, index) {
@@ -363,10 +457,6 @@
     const styles = getComputedStyle(element);
     const strokeWidth = strokeWidthFor(element, "outline");
     const pad = Math.ceil(strokeWidth / 2) + 3;
-    const isSubmenu = element.matches("#menu .submenu");
-    const fillPad = isSubmenu
-      ? pad + Math.max(0.45, strokeWidth * 0.18)
-      : pad + Math.max(1.25, strokeWidth * 0.45);
     const radius = Math.max(
       6,
       parseFloat(styles.borderTopLeftRadius) || 0,
@@ -374,37 +464,24 @@
       parseFloat(styles.borderBottomRightRadius) || 0,
       parseFloat(styles.borderBottomLeftRadius) || 0
     );
-    const path = roundedRectanglePath(
+    const path = outlinePath(
       pad,
       pad,
       Math.max(1, width - pad * 2),
       Math.max(1, height - pad * 2),
       Math.min(radius, 22)
     );
-    const fillPath = roundedRectanglePath(
-      fillPad,
-      fillPad,
-      Math.max(1, width - fillPad * 2),
-      Math.max(1, height - fillPad * 2),
-      Math.max(0, Math.min(radius - (fillPad - pad), 20))
-    );
-    const rc = rough.svg(svg);
-    drawInsetFill(svg, fillPath);
-
-    const group = rc.path(path, {
-      stroke: colorFor(element, "outline"),
+    const strokeOptions = strokeOptionsFor(element, width, height, strokeWidth);
+    drawInsetFill(svg, path, fillOverlapFor(element, strokeWidth));
+    drawRoughStroke(
+      svg,
+      path,
+      colorFor(element, "outline"),
       strokeWidth,
-      roughness: 1.18,
-      bowing: 1.15,
-      maxRandomnessOffset: 3.2,
-      disableMultiStroke: true,
-      seed: seedFor(element, "rounded-rectangle-" + index),
-      fill: "none",
-      preserveVertices: true
-    });
-
-    applyPathDefaults(group);
-    svg.appendChild(group);
+      seedFor(element, "rough-visible-stroke-" + index),
+      strokeOptions
+    );
+    prepareMediaClip(element, path);
   }
 
   function drawHeaderLine(element, index, mode) {

@@ -41,7 +41,8 @@
   padding: 0.48rem 1.08rem !important;
 }
 
-#mtm-theme-toggle .mtm-theme-icon {
+#mtm-theme-toggle .mtm-theme-icon,
+#mtm-header-search-link .mtm-header-search-icon {
   height: 26px !important;
   width: 26px !important;
 }
@@ -66,6 +67,7 @@
 }
 
 #mtm-theme-toggle,
+#mtm-header-search-link,
 #theme-toggle {
   height: 40px !important;
   min-height: 40px !important;
@@ -155,6 +157,14 @@ html.mtm-notation-ready .mtm-home-page .mtm-hero-emphasis:not([data-mtm-notation
   line-height: 1.45 !important;
   margin: 0 !important;
   max-width: 33rem !important;
+}
+
+@media (min-width: 821px) {
+  .mtm-home-page .entry-content,
+  .mtm-home-page .entry-content p {
+    max-width: none !important;
+    white-space: nowrap !important;
+  }
 }
 
 .mtm-home-cta-row,
@@ -1628,7 +1638,7 @@ body.dark .mtm-home-page .first-entry.home-info .entry-header .mtm-hero-title .m
   .mtm-home-page .mtm-home-copy .mtm-home-socials {
     display: grid !important;
     gap: clamp(0.35rem, 0.7vw, 0.6rem) !important;
-    grid-template-columns: repeat(5, minmax(max-content, 1fr)) !important;
+    grid-template-columns: repeat(6, minmax(max-content, 1fr)) !important;
   }
 
   .mtm-home-page .mtm-home-copy .mtm-social-button {
@@ -1701,7 +1711,7 @@ body.dark .mtm-home-page .first-entry.home-info .entry-header .mtm-hero-title .m
   .mtm-home-page .mtm-home-links-row .mtm-home-socials {
     display: grid !important;
     gap: clamp(0.35rem, 0.7vw, 0.6rem) !important;
-    grid-template-columns: repeat(5, minmax(max-content, 1fr)) !important;
+    grid-template-columns: repeat(6, minmax(max-content, 1fr)) !important;
     width: 100% !important;
   }
 }
@@ -1779,11 +1789,11 @@ body.dark .mtm-home-page .first-entry.home-info .entry-header .mtm-hero-title .m
   }
 }
 
-/* Discord completes the mobile 3-by-2 social grid and stays mobile-only. */
+/* Discord completes the desktop row and mobile 3-by-2 social grid. */
 .mtm-home-page .mtm-home-links-row .mtm-social-discord {
   --mtm-rough-fill: var(--mtm-purple, #744eaa);
   background: var(--mtm-purple, #744eaa) !important;
-  display: none !important;
+  display: inline-flex !important;
 }
 
 @media (max-width: 820px) {
@@ -1856,17 +1866,6 @@ body.dark .mtm-site-footer .mtm-footer-social img {
   opacity: 1 !important;
 }
 
-/* Discord is available in the compact mobile Connect list only. */
-.mtm-site-footer .mtm-footer-discord {
-  display: none !important;
-}
-
-@media (max-width: 560px) {
-  .mtm-site-footer .mtm-footer-discord {
-    display: inline-flex !important;
-  }
-}
-
 /* Mobile navigation is a permanently pinned logo/theme/hamburger row. */
 #mtm-mobile-menu-toggle {
   display: none !important;
@@ -1899,7 +1898,9 @@ body.dark .mtm-site-footer .mtm-footer-social img {
 
   .header .nav,
   .header nav {
+    align-items: center !important;
     display: flex !important;
+    flex-wrap: nowrap !important;
     height: auto !important;
     min-height: 68px !important;
     padding: 0.45rem clamp(0.65rem, 3vw, 1rem) !important;
@@ -1907,35 +1908,44 @@ body.dark .mtm-site-footer .mtm-footer-social img {
   }
 
   .header .logo {
+    align-items: center !important;
     display: flex !important;
+    flex: 1 1 auto !important;
+    justify-content: flex-start !important;
     min-height: 0 !important;
-    width: 100% !important;
+    min-width: 0 !important;
+    width: auto !important;
   }
 
   .header .logo > a {
-    flex: 1 1 auto !important;
-    font-size: clamp(1.05rem, 4.8vw, 1.4rem) !important;
+    flex: 0 1 auto !important;
+    font-size: clamp(1.02rem, 4.55vw, 1.5rem) !important;
+    gap: clamp(0.18rem, 0.8vw, 0.34rem) !important;
+    max-width: 100% !important;
     min-width: 0 !important;
+    width: auto !important;
   }
 
   .header .mtm-header-logo {
-    height: 2.25rem !important;
-    width: 2.25rem !important;
+    height: clamp(1.8rem, 7.6vw, 2.1rem) !important;
+    width: clamp(1.8rem, 7.6vw, 2.1rem) !important;
   }
 
   .header .mtm-header-logo-text {
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
     white-space: nowrap !important;
   }
 
   .header .logo-switches {
     flex: 0 0 auto !important;
-    gap: 0.2rem !important;
+    gap: 0 !important;
     margin-left: auto !important;
+    min-width: max-content !important;
   }
 
   .header #mtm-theme-toggle,
+  .header #mtm-header-search-link,
   .header #mtm-mobile-support-link,
   .header #mtm-mobile-menu-toggle {
     align-items: center !important;
@@ -1945,16 +1955,21 @@ body.dark .mtm-site-footer .mtm-footer-social img {
     box-shadow: none !important;
     color: currentColor !important;
     cursor: pointer !important;
-    height: 40px !important;
+    height: clamp(28px, 7.6vw, 34px) !important;
     justify-content: center !important;
     margin: 0 !important;
-    min-height: 40px !important;
-    min-width: 40px !important;
+    min-height: clamp(28px, 7.6vw, 34px) !important;
+    min-width: clamp(28px, 7.6vw, 34px) !important;
     padding: 0 !important;
-    width: 40px !important;
+    width: clamp(28px, 7.6vw, 34px) !important;
   }
 
   .header #mtm-mobile-support-link {
+    display: inline-flex !important;
+    text-decoration: none !important;
+  }
+
+  .header #mtm-header-search-link {
     display: inline-flex !important;
     text-decoration: none !important;
   }
@@ -1971,6 +1986,14 @@ body.dark .mtm-site-footer .mtm-footer-social img {
     stroke-linejoin: round !important;
     stroke-width: 1.5px !important;
     width: 25px !important;
+  }
+
+  .header #mtm-theme-toggle .mtm-theme-icon,
+  .header #mtm-header-search-link .mtm-header-search-icon,
+  .header .mtm-mobile-support-icon,
+  .header .mtm-mobile-menu-icon {
+    height: clamp(21px, 5.8vw, 24px) !important;
+    width: clamp(21px, 5.8vw, 24px) !important;
   }
 
   html.mtm-dark .mtm-mobile-support-icon,
@@ -2174,6 +2197,7 @@ body.dark .mtm-site-footer .mtm-footer-social img {
 .mtm-post-square-icon {
   align-self: start !important;
   aspect-ratio: 1 / 1 !important;
+  --mtm-rough-fill: color-mix(in srgb, var(--mtm-ink, #292f33) 7%, transparent);
   background: color-mix(in srgb, var(--mtm-ink, #292f33) 7%, transparent) !important;
   border: 3px solid transparent !important;
   border-radius: 6px !important;
@@ -2206,6 +2230,7 @@ body.dark .mtm-site-footer .mtm-footer-social img {
 
 html.mtm-dark .mtm-post-square-icon,
 body.dark .mtm-post-square-icon {
+  --mtm-rough-fill: color-mix(in srgb, var(--mtm-paper, #fff) 8%, transparent);
   background: color-mix(in srgb, var(--mtm-paper, #fff) 8%, transparent) !important;
   border-color: transparent !important;
   color: var(--mtm-paper, #fff) !important;
@@ -2226,11 +2251,6 @@ html.mtm-rough-ready .mtm-home-video-cell .mtm-video-thumb {
 .mtm-post-square-icon > .mtm-local-rough-svg,
 .mtm-home-video-cell .mtm-video-thumb > .mtm-local-rough-svg {
   z-index: 3 !important;
-}
-
-.mtm-post-square-icon > .mtm-local-rough-svg .mtm-rough-fill-path,
-.mtm-home-video-cell .mtm-video-thumb > .mtm-local-rough-svg .mtm-rough-fill-path {
-  fill: transparent !important;
 }
 
 .mtm-post-square-icon > img,
@@ -2424,4 +2444,194 @@ html.mtm-rough-ready .mtm-home-video-cell .mtm-video-thumb {
 .mtm-community-actions .mtm-community-join * {
   font-family: "Comic Sans MS", "Comic Sans", cursive !important;
   font-weight: 900 !important;
+}
+
+/* Let the rough SVG own filled surfaces so color stays inside drawn outlines. */
+:where(
+  main article.post-entry,
+  .first-entry:not(.home-info),
+  details.toc,
+  #menu .submenu,
+  #menu .menu-button > a,
+  .mtm-social-button,
+  .mtm-polemics-button,
+  .mtm-channel-buttons a,
+  .post-tags a,
+  .terms-tags a,
+  .share-buttons,
+  .paginav,
+  nav.pagination,
+  .pagination,
+  .infinite-scroll-button,
+  .search-input-wrap,
+  .searchResults li,
+  .mtm-rough-card,
+  .mtm-rough-button,
+  .mtm-post-square-icon,
+  .mtm-video-thumb,
+  .mtm-media-poster,
+  .mtm-type-pill,
+  .mtm-topic-pill
+) {
+  --mtm-rough-fill: var(--mtm-paper, #fff);
+}
+
+html.mtm-dark :where(
+  main article.post-entry,
+  .first-entry:not(.home-info),
+  details.toc,
+  #menu .submenu,
+  .share-buttons,
+  .paginav,
+  nav.pagination,
+  .pagination,
+  .infinite-scroll-button,
+  .search-input-wrap,
+  .searchResults li,
+  .mtm-rough-card,
+  .mtm-post-square-icon,
+  .mtm-video-thumb,
+  .mtm-media-poster
+),
+body.dark :where(
+  main article.post-entry,
+  .first-entry:not(.home-info),
+  details.toc,
+  #menu .submenu,
+  .share-buttons,
+  .paginav,
+  nav.pagination,
+  .pagination,
+  .infinite-scroll-button,
+  .search-input-wrap,
+  .searchResults li,
+  .mtm-rough-card,
+  .mtm-post-square-icon,
+  .mtm-video-thumb,
+  .mtm-media-poster
+) {
+  --mtm-rough-fill: var(--mtm-dark-bg, #14171a);
+}
+
+html.mtm-rough-ready :where(
+  main article.post-entry,
+  .first-entry:not(.home-info),
+  details.toc,
+  #menu .submenu,
+  #menu .menu-button > a,
+  .mtm-social-button,
+  .mtm-polemics-button,
+  .mtm-channel-buttons a,
+  .post-tags a,
+  .terms-tags a,
+  .share-buttons,
+  .paginav,
+  nav.pagination,
+  .pagination,
+  .infinite-scroll-button,
+  .search-input-wrap,
+  .searchResults li,
+  .mtm-rough-card,
+  .mtm-rough-button,
+  .mtm-post-square-icon,
+  .mtm-video-thumb,
+  .mtm-media-poster,
+  .mtm-type-pill,
+  .mtm-topic-pill
+).mtm-roughened {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.mtm-roughened > .mtm-local-rough-svg .mtm-rough-fill-path {
+  fill: var(--mtm-rough-fill, transparent) !important;
+  stroke: var(--mtm-rough-fill, transparent) !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+  stroke-width: var(--mtm-rough-fill-overlap, 0) !important;
+}
+
+:where(.mtm-post-square-icon, .mtm-video-thumb, .mtm-media-poster).mtm-roughened {
+  overflow: visible !important;
+}
+
+:where(.mtm-post-square-icon, .mtm-video-thumb, .mtm-media-poster).mtm-roughened > .mtm-local-rough-svg {
+  z-index: 0 !important;
+}
+
+:where(.mtm-post-square-icon, .mtm-video-thumb, .mtm-media-poster).mtm-rough-has-media > .mtm-local-rough-svg {
+  z-index: 3 !important;
+}
+
+:where(.mtm-post-square-icon, .mtm-video-thumb, .mtm-media-poster).mtm-rough-has-media > .mtm-local-rough-svg .mtm-rough-fill-path {
+  fill: transparent !important;
+  stroke: transparent !important;
+}
+
+.mtm-home-video-cell .mtm-video-thumb {
+  --mtm-rough-fill: var(--mtm-red, #dd2e44);
+}
+
+:where(.mtm-post-square-icon, .mtm-video-thumb, .mtm-media-poster).mtm-roughened:not(.mtm-rough-has-media) > .mtm-local-rough-svg .mtm-rough-fill-path,
+.mtm-home-video-cell .mtm-video-thumb-placeholder.mtm-roughened > .mtm-local-rough-svg .mtm-rough-fill-path {
+  fill: var(--mtm-rough-fill, var(--mtm-red, #dd2e44)) !important;
+  stroke: var(--mtm-rough-fill, var(--mtm-red, #dd2e44)) !important;
+}
+
+:where(.mtm-post-square-icon, .mtm-video-thumb, .mtm-media-poster).mtm-roughened > :where(img, picture, video, iframe) {
+  border-radius: calc(var(--mtm-card-radius, 8px) - 2px) !important;
+  clip-path: var(
+    --mtm-rough-clip-path,
+    inset(var(--mtm-rough-media-clip-inset, 5px) round calc(var(--mtm-card-radius, 8px) - 2px))
+  ) !important;
+}
+
+.mtm-video-thumb.mtm-roughened > .mtm-video-duration,
+.mtm-media-poster.mtm-roughened > .mtm-video-duration {
+  position: absolute !important;
+  z-index: 2 !important;
+}
+
+/* Desktop social buttons use rounded pill geometry; mobile keeps icon squares. */
+@media (min-width: 821px) {
+  .mtm-home-page .mtm-home-links-row .mtm-social-button,
+  .mtm-home-page .mtm-home-copy .mtm-social-button {
+    aspect-ratio: auto !important;
+    border-radius: 999px !important;
+    flex: 0 1 auto !important;
+    gap: 0.42rem !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+    height: 3.05rem !important;
+    min-height: 3.05rem !important;
+    min-width: max-content !important;
+    padding: 0.55rem 0.95rem !important;
+    width: auto !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-button > span,
+  .mtm-home-page .mtm-home-copy .mtm-social-button > span {
+    clip: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+    white-space: nowrap !important;
+    width: auto !important;
+  }
+
+  .mtm-home-page .mtm-home-links-row .mtm-social-icon,
+  .mtm-home-page .mtm-home-copy .mtm-social-icon {
+    height: 1.15rem !important;
+    width: 1.15rem !important;
+  }
+}
+
+.mtm-home-view-all .mtm-home-view-all-arrow {
+  font-family: "Shantell Sans", "Comic Sans MS", "Comic Sans", cursive !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
 }

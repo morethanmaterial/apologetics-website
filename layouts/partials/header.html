@@ -1,5 +1,6 @@
 <header class="header">
   <nav class="nav">
+    {{- $searchMenu := index (where site.Menus.main "Identifier" "search") 0 -}}
     <div class="logo">
       {{- $label_text := (site.Params.label.text | default site.Title) -}}
       {{- $headerLogo := resources.Get "svg/relative-logo.svg" -}}
@@ -15,46 +16,6 @@
       </a>
       {{- end }}
 
-      <div class="logo-switches">
-        {{- if (not site.Params.disableThemeToggle) }}
-        <button id="mtm-theme-toggle" type="button" accesskey="t" title="Switch theme (Alt + T)" aria-label="Switch theme">
-          <svg class="mtm-theme-icon mtm-icon-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-          <svg class="mtm-theme-icon mtm-icon-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-        </button>
-        {{- end }}
-        <a id="mtm-mobile-support-link" href="{{ "/support/" | relLangURL }}" aria-label="Support More Than Material" title="Support">
-          <svg class="mtm-mobile-support-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 21.35 10.55 20.03C5.4 15.36 2 12.27 2 8.5 2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.53L12 21.35Z"></path>
-          </svg>
-        </a>
-        <button id="mtm-mobile-menu-toggle" type="button" aria-controls="menu" aria-expanded="false" aria-label="Open navigation menu">
-          <svg class="mtm-mobile-menu-icon mtm-mobile-menu-open-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="4" x2="20" y1="6" y2="6"></line>
-            <line x1="4" x2="20" y1="12" y2="12"></line>
-            <line x1="4" x2="20" y1="18" y2="18"></line>
-          </svg>
-          <svg class="mtm-mobile-menu-icon mtm-mobile-menu-close-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M18 6 6 18"></path>
-            <path d="m6 6 12 12"></path>
-          </svg>
-        </button>
-      </div>
     </div>
 
     {{- $currentPage := . -}}
@@ -62,6 +23,7 @@
 
     <ul id="menu" aria-label="Primary navigation">
       {{- range site.Menus.main }}
+        {{- if ne .Identifier "search" }}
         {{- $classes := slice -}}
         {{- if .HasChildren }}{{ $classes = $classes | append "menu-item-has-children" }}{{ end -}}
         {{- with .Params.class }}{{ $classes = $classes | append . }}{{ end -}}
@@ -104,7 +66,59 @@
             </a>
           {{- end }}
         </li>
+        {{- end }}
       {{- end }}
     </ul>
+
+    <div class="logo-switches">
+      {{- if (not site.Params.disableThemeToggle) }}
+      <button id="mtm-theme-toggle" type="button" accesskey="t" title="Switch theme (Alt + T)" aria-label="Switch theme">
+        <svg class="mtm-theme-icon mtm-icon-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="mtm-theme-icon mtm-icon-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+      {{- end }}
+      {{- with $searchMenu }}
+      <a id="mtm-header-search-link" href="{{ .URL | relLangURL }}" accesskey="/" aria-label="{{ .Title | default .Name }}" title="{{ .Title | default .Name }} (Alt + /)">
+        <svg class="mtm-header-search-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </a>
+      {{- end }}
+      <a id="mtm-mobile-support-link" href="{{ "/support/" | relLangURL }}" aria-label="Support More Than Material" title="Support">
+        <svg class="mtm-mobile-support-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 21.35 10.55 20.03C5.4 15.36 2 12.27 2 8.5 2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.53L12 21.35Z"></path>
+        </svg>
+      </a>
+      <button id="mtm-mobile-menu-toggle" type="button" aria-controls="menu" aria-expanded="false" aria-label="Open navigation menu">
+        <svg class="mtm-mobile-menu-icon mtm-mobile-menu-open-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="4" x2="20" y1="6" y2="6"></line>
+          <line x1="4" x2="20" y1="12" y2="12"></line>
+          <line x1="4" x2="20" y1="18" y2="18"></line>
+        </svg>
+        <svg class="mtm-mobile-menu-icon mtm-mobile-menu-close-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+      </button>
+    </div>
   </nav>
 </header>

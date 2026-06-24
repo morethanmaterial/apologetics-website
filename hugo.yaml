@@ -171,6 +171,12 @@ menu:
       url: /types/video/
       weight: 15
 
+    - identifier: explore-resources
+      parent: explore
+      name: Resources
+      url: /resources/
+      weight: 20
+
     - identifier: explore-archive
       parent: explore
       name: Archive
@@ -193,11 +199,6 @@ menu:
       name: Community
       url: /community/
       weight: 35
-
-    - identifier: resources
-      name: Resources
-      url: /resources/
-      weight: 36
 
     - identifier: search
       name: Search

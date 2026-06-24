@@ -1319,9 +1319,9 @@ html.mtm-rough-ready header.header::after {
 
   display: flex !important;
   align-items: center !important;
-  justify-content: space-between !important;
+  justify-content: flex-start !important;
   flex-wrap: nowrap !important;
-  gap: 1rem !important;
+  gap: clamp(1rem, 2.2vw, 2rem) !important;
 
   position: relative;
   z-index: 1001;
@@ -1344,16 +1344,18 @@ html.mtm-rough-ready header.header::after {
   line-height: 1 !important;
 }
 
-/* Theme toggle sits beside logo */
+/* Header utility icons sit after the menu */
 .logo-switches {
   display: inline-flex !important;
   align-items: center !important;
   gap: 0.15rem !important;
-  margin-left: 0.25rem !important;
+  flex: 0 0 auto !important;
+  margin-left: 0 !important;
 }
 
-/* Supports your custom toggle id, and PaperMod's original id if it exists */
+/* Supports your custom toggle id, the header search icon, and PaperMod's original id if it exists */
 #mtm-theme-toggle,
+#mtm-header-search-link,
 #theme-toggle {
   appearance: none !important;
   -webkit-appearance: none !important;
@@ -1376,9 +1378,11 @@ html.mtm-rough-ready header.header::after {
 
   color: currentColor !important;
   cursor: pointer !important;
+  text-decoration: none !important;
 }
 
 #mtm-theme-toggle:hover,
+#mtm-header-search-link:hover,
 #theme-toggle:hover {
   transform: none !important;
   background: transparent !important;
@@ -1386,6 +1390,14 @@ html.mtm-rough-ready header.header::after {
 }
 
 #mtm-theme-toggle .mtm-theme-icon {
+  width: 20px !important;
+  height: 20px !important;
+  display: block !important;
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+#mtm-header-search-link .mtm-header-search-icon {
   width: 20px !important;
   height: 20px !important;
   display: block !important;
@@ -1415,16 +1427,16 @@ html.dark #mtm-theme-toggle .mtm-icon-sun {
   display: block !important;
 }
 
-/* Menu stays on the right in one row */
+/* Menu sits between the banner and utility icons in one row */
 #menu,
 .menu {
   display: flex !important;
   align-items: center !important;
-  justify-content: flex-end !important;
+  justify-content: flex-start !important;
   flex-wrap: nowrap !important;
   gap: 0.45rem !important;
 
-  margin: 0 0 0 auto !important;
+  margin: 0 !important;
   padding: 0 !important;
 
   overflow: visible !important;
@@ -1836,6 +1848,7 @@ html.mtm-touch-menu-mode #menu .menu-trigger:focus {
 
 /* Theme toggle should not be vertically clipped */
 #mtm-theme-toggle,
+#mtm-header-search-link,
 #theme-toggle {
   width: 32px !important;
   height: 32px !important;

@@ -43,8 +43,8 @@
         {{- $heroTitle := site.Params.homeInfoParams.Title | default site.Title -}}
         {{- if eq $heroTitle "More Than Material" -}}
         <h1 class="mtm-hero-title" aria-label="Reality is more than material.">
-          <span class="mtm-title-line"><span>Reality&nbsp;is&nbsp;</span><span class="mtm-hero-emphasis" data-mtm-notation-load-animate data-mtm-notation-duration="950">more</span></span>
-          <span class="mtm-title-line mtm-hero-emphasis" data-mtm-notation-load-animate data-mtm-notation-duration="950">than&nbsp;material.</span>
+          <span class="mtm-title-line"><span>Reality&nbsp;is&nbsp;</span><span class="mtm-hero-emphasis" data-mtm-notation-load-animate data-mtm-notation-duration="375">more</span></span>
+          <span class="mtm-title-line mtm-hero-emphasis" data-mtm-notation-load-animate data-mtm-notation-duration="750">than&nbsp;material.</span>
         </h1>
         {{- else -}}
         <h1 class="mtm-hero-title">{{ $heroTitle | markdownify }}</h1>
@@ -155,7 +155,7 @@
           {{- end }}
         </div>
         <a class="mtm-home-view-all mtm-rough-card" href="{{ "/posts/" | relLangURL }}">
-          <span class="mtm-home-view-all-label">Show all posts</span>
+          <span class="mtm-home-view-all-label">See more posts</span>
           <span class="mtm-home-view-all-arrow" aria-hidden="true">→</span>
         </a>
       </div>

@@ -7,6 +7,7 @@
 {{- $podcastIcon := resources.Get "svg/bounded-microphone-icon.svg" -}}
 {{- $discordIcon := resources.Get "svg/bounded-discord-icon.svg" -}}
 {{- $communityURL := site.Params.community.url | default "/community/" -}}
+{{- $exploreMenu := index (where site.Menus.main "Identifier" "explore") 0 -}}
 
 <footer class="footer mtm-site-footer">
   <div class="mtm-site-footer-inner">
@@ -22,15 +23,16 @@
     <nav class="mtm-footer-nav" aria-label="Footer navigation">
       <div>
         <h2>Explore</h2>
-        <a href="{{ "/posts/" | relLangURL }}">Articles</a>
-        <a href="{{ "/archives/" | relLangURL }}">Archive</a>
-        <a href="{{ "/tags/" | relLangURL }}">Topics</a>
+        {{- range $exploreMenu.Children }}
+        <a href="{{ .URL | relLangURL }}">{{ .Name }}</a>
+        {{- end }}
       </div>
       <div>
-        <h2>Learn</h2>
-        <a href="{{ "/resources/" | relLangURL }}">Resources</a>
-        <a href="{{ "/gospel/" | relLangURL }}">Gospel</a>
+        <h2>Information</h2>
         <a href="{{ "/about/" | relLangURL }}">About</a>
+        <a href="{{ "/community/" | relLangURL }}">Contact</a>
+        <a href="{{ "/license/" | relLangURL }}">License</a>
+        <a href="{{ "/resources/" | relLangURL }}">Resources</a>
       </div>
       <div>
         <h2>Connect</h2>
@@ -60,13 +62,6 @@
         </a>
       </div>
     </nav>
-
-    <section class="mtm-footer-legal" aria-label="Site information">
-      <a href="{{ "/license/" | relLangURL }}">License</a>
-      <a href="{{ "/support/" | relLangURL }}">Support</a>
-      <a href="https://gohugo.io/?utm_source=more-than-material" rel="noopener noreferrer" target="_blank">Hugo</a>
-      <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener noreferrer" target="_blank">PaperMod</a>
-    </section>
   </div>
 </footer>
 {{- end }}
