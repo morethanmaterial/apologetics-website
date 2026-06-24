@@ -43,8 +43,7 @@
   const lineTargets = [
     { selector: ".header", mode: "bottom" },
     { selector: ".mtm-site-footer", mode: "top" },
-    { selector: ".md-content hr", mode: "middle" },
-    { selector: ".md-content blockquote", mode: "left" }
+    { selector: ".md-content hr", mode: "middle" }
   ];
 
   let scheduled = false;
@@ -138,10 +137,6 @@
       return (document.documentElement.classList.contains("mtm-dark") || document.body.classList.contains("dark"))
         ? (cssVar("--mtm-paper", element) || "#f5f8fa")
         : (cssVar("--mtm-ink", element) || "#292f33");
-    }
-
-    if (mode === "left" && element.matches(".md-content blockquote")) {
-      return cssVar("--mtm-yellow", element);
     }
 
     if (mode === "middle" && element.matches(".md-content hr")) {
@@ -411,6 +406,49 @@
     svg.appendChild(group);
   }
 
+  function drawGlobalRectangle(element, index) {
+    clearRectangle(element);
+    prepare(element);
+
+    const box = bounds(element);
+    if (box.width < 8 || box.height < 8) return;
+
+    const strokeWidth = strokeWidthFor(element, "outline");
+    const pad = Math.ceil(strokeWidth / 2) + 3;
+    const radius = Math.max(
+      6,
+      parseFloat(getComputedStyle(element).borderTopLeftRadius) || 0,
+      parseFloat(getComputedStyle(element).borderTopRightRadius) || 0,
+      parseFloat(getComputedStyle(element).borderBottomRightRadius) || 0,
+      parseFloat(getComputedStyle(element).borderBottomLeftRadius) || 0
+    );
+    const svg = createSvg(
+      "mtm-rough-outline-svg mtm-rough-global-outline-svg",
+      box.left,
+      box.top,
+      box.width,
+      box.height,
+      box.width,
+      box.height
+    );
+    const path = outlinePath(
+      pad,
+      pad,
+      Math.max(1, box.width - pad * 2),
+      Math.max(1, box.height - pad * 2),
+      Math.min(radius, 22)
+    );
+
+    drawRoughStroke(
+      svg,
+      path,
+      colorFor(element, "outline"),
+      strokeWidth,
+      seedFor(element, "rough-visible-global-stroke-" + index),
+      strokeOptionsFor(element, box.width, box.height, strokeWidth)
+    );
+  }
+
   function cssPathValue(path) {
     return "path(\"" + path.replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + "\")";
   }
@@ -677,6 +715,10 @@
 
     document.querySelectorAll(outlineTargets).forEach(function (element, index) {
       if (element.matches("details.toc")) watchToc(element);
+      if (element.matches("details.toc")) {
+        drawGlobalRectangle(element, index);
+        return;
+      }
       drawRectangle(element, index);
     });
 
@@ -688,7 +730,7 @@
 
     /*
       Text annotations are handled by rough-notation-init.js. Keep this pass
-      focused on structural outlines, dividers, blockquotes, and cards.
+      focused on structural outlines, dividers, and cards.
     */
 
     document.documentElement.classList.add("mtm-rough-ready");

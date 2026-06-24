@@ -29,7 +29,7 @@
     ".md-content u",
     ".md-content ins",
     ".post-meta a",
-    ".footer a",
+    ".footer a:not(.mtm-footer-logo)",
     ".entry-cover a",
     ".menu .active"
   ].join(",");
@@ -189,7 +189,11 @@
 
   function annotationColor(element, type) {
     if (type === "heading" || type === "inserted") {
-      return cssVar("--mtm-yellow", element) || "#ffcc4d";
+      return cssVar("--mtm-accent-primary", element) || cssVar("--mtm-purple", element) || "#744eaa";
+    }
+
+    if (type === "hero-secondary") {
+      return cssVar("--mtm-accent-secondary", element) || cssVar("--mtm-yellow", element) || "#ffcc4d";
     }
 
     if (type === "link") {
@@ -329,6 +333,30 @@
     element.getClientRects = function () {
       const rects = textRectsFor(element);
       return rects.length ? rects : originalGetClientRects();
+    };
+
+    element._mtmNotationTextRectsInstalled = true;
+  }
+
+  function installExtendedTextRectProvider(element, extentElement) {
+    if (element._mtmNotationTextRectsInstalled) return;
+
+    const originalGetClientRects = element.getClientRects.bind(element);
+    element.getClientRects = function () {
+      const rects = textRectsFor(element);
+      const extent = extentElement.getBoundingClientRect();
+      if (!rects.length || extent.width <= 2) return rects.length ? rects : originalGetClientRects();
+
+      return rects.map(function (rect) {
+        return {
+          top: rect.top,
+          right: extent.right,
+          bottom: rect.bottom,
+          left: extent.left,
+          width: extent.width,
+          height: rect.height
+        };
+      });
     };
 
     element._mtmNotationTextRectsInstalled = true;
@@ -659,8 +687,10 @@
   }
 
   function annotateHeading(element, index) {
+    const fullWidthHomeSectionHeading = element.matches(".mtm-home-sections .mtm-home-cell > h2");
     const target = headingTextTarget(element);
     if (!target) return;
+    if (fullWidthHomeSectionHeading) installExtendedTextRectProvider(target, element);
 
     annotate(target, "mtm-notation-heading", {
       type: "underline",
@@ -702,7 +732,7 @@
       iterations: 1,
       multiline: true,
       type: "underline",
-      color: annotationColor(element, "heading"),
+      color: annotationColor(element, "hero-secondary"),
       roughness: 0.9,
       strokeWidth: 5,
       padding: headingUnderlinePadding(element)
